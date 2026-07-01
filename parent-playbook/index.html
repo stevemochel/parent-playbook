@@ -1,0 +1,1728 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>FGL Parent Playbook · Companion Site</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#2D9B14" />
+<meta name="robots" content="noindex,nofollow" />
+<style>
+@font-face {
+  font-family: "VAG Rounded";
+  src: url("fonts/VAG Rounded Bold.otf") format("opentype");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "VAG Rounded";
+  src: url("fonts/VAG Rounded Light.otf") format("opentype");
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+
+:root {
+  --fgl-green:        #2D9B14;
+  --fgl-green-deep:   #1F6E0E;
+  --fgl-green-soft:   #E8F5E3;
+  --fgl-green-tint:   #F4FAF1;
+  --fgl-orange:       #FF8000;
+  --fgl-orange-deep:  #CC6600;
+  --fgl-orange-soft:  #FFF1E0;
+
+  --ink-1000: #0B0F0A;
+  --ink-900:  #1A1F1B;
+  --ink-700:  #3E4842;
+  --ink-500:  #6B7280;
+  --ink-300:  #B8BEB6;
+  --ink-200:  #D8DCD7;
+  --ink-100:  #EEF0ED;
+  --ink-50:   #F6F7F5;
+
+  --font-head: "VAG Rounded", "Arial Rounded MT Bold", Arial, system-ui, sans-serif;
+  --font-body: "VAG Rounded", Arial, system-ui, sans-serif;
+  --tr-eyebrow: 0.14em;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: #fff;
+  color: var(--ink-900);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink-1000);
+  line-height: 1.1;
+  margin: 0;
+}
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+
+.eyebrow {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: var(--tr-eyebrow); text-transform: uppercase;
+  color: var(--fgl-green-deep);
+}
+
+.phone {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-1000);
+  position: relative;
+  min-height: 100vh;
+}
+
+.tb {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--ink-100);
+  background: #fff;
+  position: sticky; top: 0; z-index: 20;
+}
+.tb__brand {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-1000);
+}
+.tb__back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-1000);
+}
+.tb__back::before {
+  content: '‹';
+  font-size: 18px; line-height: 1;
+  color: var(--fgl-green);
+}
+.tb__dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--fgl-green);
+}
+.tb__menu {
+  width: 28px; height: 18px; position: relative;
+}
+.tb__menu::before, .tb__menu::after, .tb__menu i {
+  content: ''; position: absolute; left: 0; right: 0;
+  height: 2px; background: var(--ink-1000); border-radius: 1px;
+  display: block;
+}
+.tb__menu::before { top: 2px; }
+.tb__menu i { top: 8px; }
+.tb__menu::after { bottom: 2px; }
+
+.tile {
+  display: block;
+  border: 1px solid var(--ink-200);
+  border-radius: 14px;
+  background: #fff;
+  padding: 18px 18px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.tile__num {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-500);
+}
+.tile__word {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 38px; line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--fgl-green-deep);
+  margin-top: 4px;
+}
+.tile__sub {
+  font-family: var(--font-body);
+  font-size: 13px; line-height: 1.4;
+  color: var(--ink-700);
+  margin-top: 6px;
+}
+.tile__count {
+  margin-top: 12px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-500);
+}
+.tile__arrow {
+  position: absolute; right: 16px; top: 18px;
+  font-family: var(--font-head); font-weight: 700; font-size: 22px;
+  color: var(--fgl-green);
+  line-height: 1;
+}
+
+.hero-green {
+  background: var(--fgl-green);
+  color: #fff;
+  padding: 32px 22px 28px;
+}
+.hero-green__brand {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(255,255,255,.85);
+  margin-bottom: 22px;
+}
+.hero-green__brand .d { width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+.hero-green__title {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 44px; line-height: 0.95;
+  letter-spacing: -0.025em;
+  color: #fff;
+}
+.hero-green__tag {
+  margin-top: 14px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 13px; letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fgl-orange);
+  display: inline-block;
+  padding: 6px 10px 5px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+}
+.hero-green__sub {
+  margin-top: 12px;
+  font-family: var(--font-body);
+  font-size: 14px; line-height: 1.5;
+  color: rgba(255,255,255,.95);
+  max-width: 28ch;
+}
+
+.opener {
+  background: var(--fgl-green);
+  color: #fff;
+  padding: 26px 22px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.opener__eyebrow {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(255,255,255,.85);
+  margin-bottom: 18px;
+}
+.opener__num {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.22em;
+  color: rgba(255,255,255,.85);
+}
+.opener__word {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 76px; line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-top: 4px;
+}
+.opener__sub {
+  margin-top: 14px;
+  font-family: var(--font-body);
+  font-size: 15px; line-height: 1.4;
+  color: rgba(255,255,255,.95);
+  max-width: 26ch;
+}
+
+.sh { padding: 26px 22px 6px; }
+.sh__eyebrow {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fgl-green-deep);
+  margin-bottom: 8px;
+}
+.sh__title {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 26px; line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--ink-1000);
+}
+.sh__lead {
+  margin-top: 10px;
+  font-family: var(--font-body);
+  font-size: 15px; line-height: 1.5;
+  color: var(--ink-900);
+}
+
+.body-pad { padding: 0 22px; }
+
+.step {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--ink-100);
+  cursor: pointer;
+  user-select: none;
+}
+.step:last-child { border-bottom: none; }
+.step__num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--fgl-green); color: #fff;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 14px; line-height: 32px; text-align: center;
+  flex-shrink: 0;
+  transition: background 180ms ease;
+}
+.step__body {
+  font-family: var(--font-body);
+  font-size: 14.5px; line-height: 1.45;
+  color: var(--ink-1000);
+  padding-top: 5px;
+}
+.step__crit {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--fgl-orange-deep);
+  background: var(--fgl-orange-soft);
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+.step.is-checked .step__num { background: var(--ink-300); }
+.step.is-checked .step__body {
+  color: var(--ink-500);
+  text-decoration: line-through;
+  text-decoration-color: var(--ink-300);
+}
+
+.watchfor {
+  margin: 18px 22px 0;
+  padding: 16px 18px;
+  background: var(--fgl-orange-soft);
+  border-left: 3px solid var(--fgl-orange);
+  border-radius: 0 10px 10px 0;
+}
+.watchfor__title {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fgl-orange-deep);
+  margin-bottom: 8px;
+}
+.watchfor ul {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.watchfor li {
+  font-family: var(--font-body);
+  font-size: 13.5px; line-height: 1.4;
+  color: var(--ink-1000);
+  padding-left: 14px;
+  position: relative;
+}
+.watchfor li::before {
+  content: ''; position: absolute; left: 0; top: 8px;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--fgl-orange);
+}
+
+.cue {
+  margin: 18px 22px 0;
+  padding: 16px 18px;
+  background: var(--fgl-green-tint);
+  border-left: 3px solid var(--fgl-green);
+  border-radius: 0 10px 10px 0;
+}
+.cue__title {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fgl-green-deep);
+  margin-bottom: 8px;
+}
+.cue__quote {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 14.5px; line-height: 1.45;
+  color: var(--ink-1000);
+}
+
+.askdeck {
+  margin: 14px 22px 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.askcard {
+  perspective: 800px;
+  height: 110px;
+  cursor: pointer;
+}
+.askcard__inner {
+  position: relative;
+  width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 480ms cubic-bezier(.2,.7,.2,1);
+}
+.askcard.is-flipped .askcard__inner { transform: rotateY(180deg); }
+.askcard__face {
+  position: absolute; inset: 0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  backface-visibility: hidden;
+  display: flex; flex-direction: column; justify-content: center;
+  font-family: var(--font-body);
+  font-size: 14px; line-height: 1.4;
+}
+.askcard__face--front {
+  background: #fff;
+  border: 1px solid var(--ink-200);
+  color: var(--ink-1000);
+}
+.askcard__face--back {
+  background: var(--ink-1000);
+  color: #fff;
+  transform: rotateY(180deg);
+}
+.askcard__q {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 14.5px;
+  color: var(--ink-1000);
+  letter-spacing: -0.005em;
+}
+.askcard__hint {
+  margin-top: 8px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fgl-green-deep);
+}
+.askcard__a {
+  font-family: var(--font-body);
+  font-size: 13px; line-height: 1.45;
+  color: rgba(255,255,255,.95);
+}
+.askcard__alabel {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fgl-orange);
+  margin-bottom: 6px;
+}
+
+.man { border-bottom: 1px solid var(--ink-100); }
+.man:last-of-type { border-bottom: none; }
+.man__head {
+  padding: 18px 22px;
+  display: grid;
+  grid-template-columns: 38px 1fr 18px;
+  gap: 14px;
+  align-items: center;
+  cursor: pointer;
+  background: #fff;
+}
+.man__num {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.18em;
+  color: var(--ink-500);
+  text-transform: uppercase;
+}
+.man__title {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 18px; line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ink-1000);
+}
+.man__crit {
+  display: inline-block;
+  margin-top: 5px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fgl-orange-deep);
+  background: var(--fgl-orange-soft);
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+.man__chev {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 18px;
+  color: var(--fgl-green);
+  transition: transform 220ms ease;
+  text-align: center;
+}
+.man.is-open .man__chev { transform: rotate(90deg); }
+.man__body { display: none; padding-bottom: 8px; background: var(--ink-50); }
+.man.is-open .man__body { display: block; }
+
+.man__close {
+  margin: 18px 22px 8px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1px solid var(--ink-200);
+  border-radius: 12px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-1000);
+  cursor: pointer;
+  width: calc(100% - 44px);
+}
+.man__close::before {
+  content: '▲';
+  color: var(--fgl-green);
+  font-size: 10px;
+}
+
+.backtop {
+  position: fixed;
+  right: 14px; bottom: 18px;
+  z-index: 30;
+  padding: 11px 16px 10px;
+  background: var(--ink-1000);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,.22);
+  display: inline-flex; align-items: center; gap: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.backtop.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.backtop::before {
+  content: '↑';
+  font-size: 14px;
+  color: var(--fgl-orange);
+}
+
+.video {
+  margin: 18px 22px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: #0B0F0A;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.video iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+}
+.video__placeholder {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  color: rgba(255,255,255,.95);
+  text-align: center;
+}
+.video__play {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255,255,255,.18);
+  border: 2px solid rgba(255,255,255,.6);
+  display: flex; align-items: center; justify-content: center;
+}
+.video__play::after {
+  content: '';
+  width: 0; height: 0;
+  border-left: 14px solid #fff;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  margin-left: 4px;
+}
+.video__label {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,.8);
+}
+
+.proc-title {
+  margin: 22px 22px 4px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fgl-green-deep);
+}
+
+.fend {
+  padding: 28px 22px 36px;
+  text-align: center;
+  border-top: 1px solid var(--ink-100);
+  margin-top: 32px;
+}
+.fend__url {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--fgl-green-deep);
+}
+.fend__c {
+  margin-top: 6px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--ink-500);
+}
+
+.sketch {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ttile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px 18px 6px;
+}
+.ttile {
+  position: relative;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--ink-100);
+  border-radius: 14px;
+  padding: 14px 14px 14px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: transform .12s ease, border-color .15s, box-shadow .15s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 118px;
+}
+.ttile:hover {
+  border-color: var(--fgl-green);
+  box-shadow: 0 4px 14px rgba(45,155,20,.10);
+  transform: translateY(-1px);
+}
+.ttile:active { transform: translateY(0); }
+.ttile__num {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 22px;
+  color: var(--fgl-green);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.ttile__title {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 14.5px; line-height: 1.2;
+  color: var(--ink-1000);
+  letter-spacing: -0.01em;
+}
+.ttile__crit {
+  display: inline-block;
+  align-self: flex-start;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fgl-orange);
+  background: var(--fgl-orange-soft);
+  padding: 3px 7px 2px;
+  border-radius: 999px;
+}
+.ttile__cta {
+  margin-top: auto;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fgl-green);
+}
+.ttile.is-crit {
+  background: linear-gradient(180deg, #fff 0%, #fffaf2 100%);
+}
+
+.pact {
+  margin: 28px 18px 0;
+  padding: 26px 24px 28px;
+  background: var(--fgl-green);
+  color: #fff;
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.pact::after {
+  content: "";
+  position: absolute;
+  right: -50px; top: -50px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  pointer-events: none;
+}
+.pact__eyebrow {
+  position: relative;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 10.5px; letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fgl-orange);
+  margin-bottom: 10px;
+}
+.pact__num {
+  position: relative;
+  display: flex; align-items: baseline; gap: 10px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 84px; line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+.pact__num span {
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,.85);
+  text-transform: lowercase;
+  font-weight: 700;
+}
+.pact__title {
+  position: relative;
+  margin-top: 12px;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 22px; line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.pact__lead {
+  position: relative;
+  margin-top: 10px;
+  font-family: var(--font-body); font-weight: 300;
+  font-size: 14px; line-height: 1.5;
+  color: rgba(255,255,255,.92);
+  max-width: 32ch;
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/preact@10.22.0/dist/preact.min.js"></script>
+<script src="https://unpkg.com/preact@10.22.0/hooks/dist/hooks.umd.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+
+<script>
+(function () {
+  var h = preact.h;
+  var render = preact.render;
+  var Fragment = preact.Fragment;
+  var useState = preactHooks.useState;
+  var useEffect = preactHooks.useEffect;
+  var useRef = preactHooks.useRef;
+  var useCallback = preactHooks.useCallback;
+  var html = htm.bind(h);
+
+  /* ============================================================
+     LESSON DATA — sourced from the Parent Playbook manuscript
+     ============================================================ */
+  var LESSONS = [
+    {
+      id: 1, num: "01", name: "START",
+      subtitle: "Vehicle familiarization & basic skills",
+      cue: "Ask, don't direct. \"What do you see ahead?\" — their eyes go where their words go.",
+      nextHook: "Up next — Lesson 2 · Park",
+      maneuvers: [
+        {
+          n: "01", title: "Vehicle controls", critical: true, sketch: "Wheel", vimeoId: "528900915",
+          intro: "Before your student drives anywhere, they need a consistent pre-drive setup. Run this checklist together for the first week — by Lesson 2, it should be automatic.",
+          procLabel: "The pre-drive checklist",
+          procedure: [
+            "Seat — about 12 inches from the wheel, slight bend in the arms.",
+            "Seatbelt — driver and every passenger.",
+            "Mirrors — rearview and both side mirrors set once, before driving.",
+            "Steering wheel — tilt toward chest. Hands at 9-and-3. Never 10-and-2.",
+            "Parking brake — released before shifting into gear.",
+            "Gear — confirm Drive (or Reverse) before pressing the gas.",
+            "Lights, wipers, defrost — set as needed."
+          ],
+          watchFor: [
+            "Both hands stay on the wheel any time the car is in Drive — including at red lights.",
+            "Mirrors set once. Re-adjusting before each maneuver creates variability."
+          ],
+          ask: [
+            { q: "Show me your seat, mirrors, and seatbelt check.", a: "Looking for: a deliberate pre-drive run-through. The whole checklist before the key turns." },
+            { q: "Where are your hands on the wheel? Why not 10-and-2?", a: "9-and-3 keeps hands clear of the airbag deployment zone. 10-and-2 is the old standard." },
+            { q: "Is the parking brake on or off right now? How do you know?", a: "They should know without looking — by the indicator light or the lever position." }
+          ]
+        },
+        {
+          n: "02", title: "Backing out of a space", sketch: "Backout",
+          intro: "The first maneuver of every practice drive — and one of the most important. Failing to look over the shoulder while backing out is an automatic fail on the road test.",
+          procLabel: "The procedure",
+          procedure: [
+            "Put the car in Reverse.",
+            "Signal the direction you'll be turning.",
+            { t: "Look over your right shoulder through the back window.", crit: true },
+            "Look over your left shoulder to check cross traffic.",
+            "Check mirrors — rearview, then side mirrors.",
+            "Back out slowly, turning the wheel in the direction of travel.",
+            "Once clear, shift to Drive and proceed."
+          ],
+          watchFor: [
+            "Looking only at the backup camera or mirrors — they miss approaching cars and pedestrians.",
+            "Backing out too fast. Always slow.",
+            "Forgetting to signal which direction the car will turn."
+          ],
+          ask: [
+            { q: "Before you back up — what are the three things you're going to check?", a: "Right shoulder, left shoulder, mirrors. In that order. Camera last, not first." },
+            { q: "Show me where you look over your shoulder.", a: "Through the back window — head turned, eyes scanning the path of travel. Not just a glance at the side window." },
+            { q: "Why isn't the backup camera enough?", a: "It only shows the immediate rear. Approaching cars and pedestrians from the side are out of frame." }
+          ]
+        },
+        {
+          n: "03", title: "Pull-in parking", critical: true, sketch: "ParkSpace", vimeoId: "528903162",
+          intro: "Practice in any quiet parking lot — empty corners of grocery stores, schools on weekends, and church lots are ideal. Aim for clean lines, every time.",
+          procLabel: "The procedure",
+          procedure: [
+            "Approach the space slowly and identify your target.",
+            "Position the car straight, aligned with the parking lines.",
+            "Signal toward the space.",
+            "Turn into the space, watching both sides.",
+            "Straighten the wheel as you enter.",
+            "Pull forward until evenly positioned between the lines.",
+            "Shift to Park and engage the parking brake.",
+            "Open the door to check alignment."
+          ],
+          watchFor: [
+            "Approaching too fast. Slow approach makes everything else easier.",
+            "Sloppy alignment — if crooked, pull out and try again.",
+            "Forgetting the parking brake. Connecticut law, every time."
+          ],
+          ask: [
+            { q: "Are you straight with the lines before you turn in?", a: "If they're at an angle entering, they'll be at an angle parked. Straighten first." },
+            { q: "Did you engage the parking brake?", a: "CT law requires it any time you shift to Park. Make this automatic." },
+            { q: "Open the door — are you centered between the lines?", a: "If they're not centered, run it again. Don't accept a sloppy park." }
+          ]
+        },
+        {
+          n: "04", title: "Stop signs", critical: true, sketch: "Stop", vimeoId: "1191291827",
+          intro: "Rolling stops are the #1 habit to break on residential streets. Students who roll stops in practice will roll stops on the road test.",
+          procLabel: "The procedure",
+          procedure: [
+            "Begin slowing well before the stop sign — don't brake late.",
+            "Come to a complete stop before the stop line, crosswalk, or sign.",
+            "S.T.O.P. — Sit there, Three (count out loud), Observe (left, front, right), Proceed.",
+            "If your view is blocked, slowly roll forward until you can see clearly.",
+            "Right of way: first to arrive goes first. If tied, the vehicle on the right.",
+            "Signal if turning at the intersection.",
+            "When clear and safe, accelerate smoothly through."
+          ],
+          watchFor: [
+            "Rolling stops — the car never fully settles. Listen for the tires to come to rest.",
+            "Stopping past the stop line. Stop before the line, every time.",
+            "Failing to edge forward when blocked. Creep, see, then go."
+          ],
+          ask: [
+            { q: "What does S.T.O.P. stand for?", a: "Sit there. Three (count). Observe (left, front, right). Proceed." },
+            { q: "Can you see oncoming traffic from here?", a: "If not — slow creep forward until you can. Stop again if necessary." },
+            { q: "At a four-way stop, who has the right of way?", a: "First to arrive. If tied, the vehicle on the right goes first." }
+          ]
+        },
+        {
+          n: "05", title: "Speed control", critical: true, sketch: "Speed", vimeoId: "1201513871",
+          intro: "More than reading the speedometer — it's smooth acceleration, progressive braking, and a safe following distance. The 3-second rule is the easiest habit to build.",
+          procLabel: "The practice checklist",
+          procedure: [
+            "Smooth acceleration — gradual pressure on the gas.",
+            "Progressive braking — gradual pressure, smooth stop.",
+            "Speed limit awareness — glance at the speedometer regularly.",
+            "Following distance — the 3-second rule. Pick a landmark; count one-thousand-one to one-thousand-three.",
+            "Lane position — stay centered.",
+            "Defensive driving — eyes up, scan ahead, anticipate."
+          ],
+          watchFor: [
+            "Heavy braking instead of progressive braking.",
+            "Following too closely — under 3 seconds is tailgating.",
+            "Speeding without realizing it. Glance every 5–10 seconds."
+          ],
+          ask: [
+            { q: "What's the speed limit on this road? When did you last check?", a: "If they don't know, that's the lesson. Build the speedometer-glance habit." },
+            { q: "Pick a landmark — how many seconds did you get?", a: "Three or more is safe. Less than three is tailgating — back off." },
+            { q: "Why is the 3-second rule the easiest safety habit to build?", a: "It's measurable, immediate, and works at any speed. No interpretation needed." }
+          ]
+        }
+      ]
+    },
+    {
+      id: 2, num: "02", name: "PARK",
+      subtitle: "Mastering parking maneuvers",
+      cue: "Every parking lot is a parking opportunity. Don't just take the first open spot — use the lot.",
+      nextHook: "Up next — Lesson 3 · Merge",
+      maneuvers: [
+        {
+          n: "01", title: "Pull-in parking — refinement", critical: true, sketch: "ParkSpace", vimeoId: "528903162",
+          intro: "Pull-in parking comes back from Lesson 1, but the bar is higher now. The instructor is looking for precision — clean lines, centered position, parking brake every time.",
+          procLabel: "The procedure",
+          procedure: [
+            "Approach slowly and identify your target.",
+            "Position straight with the parking lines.",
+            "Signal toward the space.",
+            "Turn in, watching both sides.",
+            "Straighten the wheel as you enter.",
+            "Pull forward until evenly positioned.",
+            "Shift to Park, engage the parking brake.",
+            "Open the door to check alignment."
+          ],
+          watchFor: [
+            "Approaching too fast.",
+            "Sloppy alignment — pull out and try again.",
+            "Forgetting the parking brake — top-10 reason students fail the road test."
+          ],
+          ask: [
+            { q: "Are you straight with the lines before you turn in?", a: "Set the geometry first. Straight in, straight out." },
+            { q: "Did you engage the parking brake?", a: "CT law. Every time you shift to Park." },
+            { q: "Open the door — are you centered?", a: "If not, run it again. Make precision the standard." }
+          ]
+        },
+        {
+          n: "02", title: "Back-in parking", critical: true, sketch: "ParkSpace", vimeoId: "203003883",
+          intro: "Back-in parking is the FGL parking method — same procedure as the RTBC App. Practice in a quiet lot with empty spaces on both sides. The over-the-shoulder check before reversing matters most on the road test.",
+          procLabel: "The procedure",
+          procedure: [
+            "Pull up close, stop with your shoulder centered on the space.",
+            "Left signal, check mirror and over your left shoulder.",
+            "Wheel full left, roll forward to 45 degrees.",
+            "Look for the right line of the space in the right mirror.",
+            "Reverse, wheel full right.",
+            { t: "Check over your right shoulder for pedestrians, signal right.", crit: true },
+            "Slowly reverse into the space, keeping the wheel locked.",
+            "Straighten when parallel; continue using mirrors and shoulder.",
+            "Backup camera in the last few seconds.",
+            "Park, parking brake on."
+          ],
+          watchFor: [
+            "Starting the turn too early or too late — 45° is the whole maneuver.",
+            "Skipping the over-the-shoulder check.",
+            "Over-relying on the backup camera — it's a finishing tool."
+          ],
+          ask: [
+            { q: "Did you signal left when you started?", a: "Left signal first — telegraphs the maneuver to traffic behind." },
+            { q: "Did you check over your right shoulder before reversing?", a: "Mandatory. Camera doesn't show pedestrians or approaching cars." },
+            { q: "Are you at 45 degrees? How can you tell?", a: "The right line of the space should be visible in the right side mirror." }
+          ]
+        },
+        {
+          n: "03", title: "The \"S\" Correction", sketch: "Parallel",
+          intro: "Sometimes a back-in park ends too close to one of the lines. Rather than just pulling forward and trying again, FGL teaches the \"S\" Correction — a standardized way to fix it.",
+          procLabel: "The procedure",
+          procedure: [
+            "Open the door to confirm which line you're too close to.",
+            "Half-turn the wheel toward the open space.",
+            "Pull forward 5–7 inches (about 4 seconds at creep). Stop.",
+            "Straighten the wheel.",
+            "Half-turn the opposite direction.",
+            "Pull forward again, 3–5 inches. Stop.",
+            "Straighten, shift to Reverse, check shoulder, back in.",
+            "Open the door — confirm centered."
+          ],
+          watchFor: [
+            "Trying to fix it without the half-turn structure.",
+            "Forgetting the shoulder check before the final reverse.",
+            "Skipping the door-open check at the end."
+          ],
+          ask: [
+            { q: "Open the door — which line are you too close to?", a: "Identify the problem before fixing it. Don't guess." },
+            { q: "Half-turn — which direction first, and why?", a: "Toward the open side. The car needs to walk away from the problem line." },
+            { q: "After the correction, are you centered now?", a: "If not, run it again. The procedure repeats — that's its strength." }
+          ]
+        },
+        {
+          n: "04", title: "Parallel parking", critical: true, sketch: "Parallel", vimeoId: "1201514358",
+          intro: "The maneuver most students worry about most. The key reference is the 45° angle — that's where you straighten the wheel. Practice on a quiet residential street with light traffic.",
+          procLabel: "The procedure — entering the space",
+          procedure: [
+            "Position alongside the front car — rear bumpers aligned, 2 feet away.",
+            "Shift to Reverse.",
+            "Turn the wheel full right.",
+            { t: "Look over your right shoulder through the back window.", crit: true },
+            "Begin backing slowly.",
+            "When the car reaches 45°, straighten the wheel.",
+            "Continue backing until your front bumper clears the rear of the front car.",
+            "Turn the wheel full left, continue backing.",
+            "Keep looking over the shoulder; check mirrors.",
+            "Straighten when parallel to the curb.",
+            "Pull forward to center if needed; Park, parking brake on."
+          ],
+          watchFor: [
+            "Hitting the curb — automatic fail on the road test.",
+            "Don't open the driver's door to check curb distance — use the mirrors.",
+            "Too far from the curb — success is within 12 inches."
+          ],
+          ask: [
+            { q: "Are your rear bumpers aligned with the front car's? Two feet apart?", a: "The starting geometry is the maneuver. Off here, off everywhere." },
+            { q: "When do you straighten the wheel during the back-up?", a: "At 45°. Watch for the front car's headlight in the right mirror." },
+            { q: "How far are you from the curb? Use the mirrors.", a: "Within 12 inches. No door opening — that extends into traffic." }
+          ]
+        },
+        {
+          n: "05", title: "K-turn (three-point turn)", critical: true, sketch: "KTurn", vimeoId: "203450991",
+          intro: "Looks simple but trips up students because of the signal sequence. The FGL standard is four signals: right, left, right, left. Hitting the curb is an automatic fail.",
+          procLabel: "The procedure — 4 signals",
+          procedure: [
+            "Signal #1 — Right. Pull to the curb (5–6\" from curb).",
+            "Stop, shift to Drive if not already.",
+            "Signal #2 — Left. Look over left shoulder, check both directions.",
+            "Wheel full left.",
+            "Move forward slowly toward the opposite curb. Stop before reaching it.",
+            "Shift to Reverse. Signal #3 — Right. Wheel full right.",
+            { t: "Look over your right shoulder through the back window.", crit: true },
+            "Back slowly toward the original curb. Stop before reaching it.",
+            "Shift to Drive. Signal #4 — Left. Wheel left, proceed in the new direction."
+          ],
+          watchFor: [
+            "Forgetting one of the four signals.",
+            "Hitting the curb — automatic fail.",
+            "Skipping the shoulder check during the reverse."
+          ],
+          ask: [
+            { q: "How many signals on a K-turn? Name them in order.", a: "Four. Right, left, right, left." },
+            { q: "Before you reverse — show me where you look.", a: "Right shoulder, through the back window. Not the side window." },
+            { q: "Three points or six? Plan before you start.", a: "Aim for three. Six is fine if needed — but planning prevents over-correcting." }
+          ]
+        },
+        {
+          n: "06", title: "Lane changes", critical: true, sketch: "Lane", vimeoId: "528902818",
+          intro: "Introduced in Lesson 2 to prepare for highway in Lesson 3. The FGL sequence: Signal → Rearview → Side → Shoulder. Every time. No exceptions.",
+          procLabel: "Signal · Rearview · Side · Shoulder",
+          procedure: [
+            "Confirm the lane change is safe and legal.",
+            "Signal 3–5 seconds before the change.",
+            "Check rearview mirror.",
+            "Check side mirror (the direction you're moving).",
+            { t: "Look over your shoulder to check the blind spot.", crit: true },
+            "Maintain speed while changing — don't slow down.",
+            "Steer smoothly into the new lane.",
+            "Recheck mirrors. Cancel signal."
+          ],
+          watchFor: [
+            "Skipping the shoulder check — the side mirror does not show the blind spot.",
+            "Slowing down during the change — closes the gap.",
+            "Signaling too late or not at all."
+          ],
+          ask: [
+            { q: "Say the four steps out loud as you do them.", a: "Signal. Rearview. Side. Shoulder. The order matters." },
+            { q: "Why does the side mirror miss the blind spot?", a: "Geometry. The side mirror covers a fixed cone — the blind spot is outside it." },
+            { q: "Did you maintain your speed?", a: "Slowing closes the gap behind. Maintain or accelerate slightly." }
+          ]
+        }
+      ]
+    },
+    {
+      id: 3, num: "03", name: "MERGE",
+      subtitle: "Highway driving & advanced skills",
+      cue: "Eyes up to the next exit, not the next car. Where they look is where the car goes.",
+      nextHook: "Up next — Lesson 4 · Pass",
+      maneuvers: [
+        {
+          n: "01", title: "Left turns — protected", critical: true, sketch: "LeftTurn",
+          intro: "Protected left turns happen at intersections with a dedicated green arrow. The arrow gives you the right of way — but it doesn't replace your own check.",
+          procLabel: "The procedure",
+          procedure: [
+            "Move into the left turn lane.",
+            "Wait for the green arrow.",
+            "Check the intersection is clear — even with the arrow.",
+            "Complete the turn into the nearest lane."
+          ],
+          watchFor: [
+            "Turning into the wrong lane — the rule is \"into the nearest lane.\"",
+            "Pulling forward into the intersection while waiting.",
+            "Skipping the intersection check because the arrow says go."
+          ],
+          ask: [
+            { q: "Which lane are you turning into?", a: "The nearest one. Not across to the far lane." },
+            { q: "Did you scan the intersection even with the green arrow?", a: "Yes. Pedestrians and cyclists don't always obey signals." },
+            { q: "What if a pedestrian stepped out as you turned?", a: "Stop. The arrow doesn't override a hazard in your path." }
+          ]
+        },
+        {
+          n: "02", title: "Left turns — unprotected", critical: true, sketch: "LeftTurn",
+          intro: "The hardest maneuver on the road test. Connecticut law has changed: do not pull into the intersection while waiting. Wait behind the stop line with wheels straight.",
+          procLabel: "The procedure",
+          procedure: [
+            "Move into the left turn lane.",
+            "Wait for the green light (not arrow).",
+            { t: "Do not pull into the intersection. Wheels straight, behind the line.", crit: true },
+            "Wait for a gap in oncoming traffic.",
+            "When clear, complete the turn quickly but smoothly.",
+            "Turn into the nearest lane."
+          ],
+          watchFor: [
+            "Pulling into the intersection while waiting — the old method.",
+            "Wheels turned while waiting — if rear-ended, pushed into oncoming traffic.",
+            "Hesitation when the gap appears."
+          ],
+          ask: [
+            { q: "Where do you wait — behind the line, or in the intersection?", a: "Behind the line. CT changed this rule. The road test scores against the current standard." },
+            { q: "Are your wheels straight or turned right now?", a: "Straight. Always. Until the gap is clear and you commit to the turn." },
+            { q: "How big a gap do you need before you go?", a: "Enough to complete the turn without forcing oncoming to brake. Read the gap; don't rush it." }
+          ]
+        },
+        {
+          n: "03", title: "Multi-lane navigation", sketch: "Lane",
+          intro: "Multi-lane roads are the bridge from residential to the highway. The core skill isn't steering — it's planning. Lane choice happens well before the lane change.",
+          procLabel: "The practice checklist",
+          procedure: [
+            "Choose the correct lane for your destination, well in advance.",
+            "Plan lane changes early — never reactively.",
+            "One lane at a time. Never cross multiple lanes at once.",
+            "Use the FGL sequence: Signal → Rearview → Side → Shoulder.",
+            "Maintain speed during the change.",
+            "Cancel signal once in the new lane."
+          ],
+          watchFor: [
+            "Late lane decisions.",
+            "Crossing multiple lanes at once.",
+            "Drifting while looking over the shoulder."
+          ],
+          ask: [
+            { q: "Which lane do you need for our destination?", a: "Pick it a half-mile out. The change should already be done by the time the exit is visible." },
+            { q: "Are you planning the lane change, or reacting to it?", a: "Plan. Reactive lane changes are where most multi-lane errors happen." },
+            { q: "How many lanes? Did you do them one at a time?", a: "One at a time, with a full check between each. No diagonal sweeps." }
+          ]
+        },
+        {
+          n: "04", title: "Highway entry — merging", sketch: "Merge", vimeoId: "528902345",
+          intro: "The hardest thing on this lesson. The rule that matters most: match speed first, then find the gap. Hesitating on the acceleration lane creates the exact problem students fear.",
+          procLabel: "The procedure",
+          procedure: [
+            "Signal left as you enter the entrance ramp.",
+            "Check highway traffic while still on the ramp.",
+            "Accelerate to match highway speed.",
+            "Check mirrors and look over your left shoulder.",
+            "Identify a gap in traffic.",
+            "Merge smoothly into the gap.",
+            "Match traffic speed.",
+            "Cancel signal and recheck mirrors."
+          ],
+          watchFor: [
+            "Braking on the acceleration lane.",
+            "Stopping at the end of the ramp.",
+            "Merging while looking only in the mirror — shoulder check is mandatory."
+          ],
+          ask: [
+            { q: "What speed are you at? Are you matching highway traffic?", a: "If you're not at highway speed, the merge will fail. Speed first." },
+            { q: "Match speed first, or find the gap first?", a: "Speed first. Then gap. Always in that order." },
+            { q: "Show me where you look over your shoulder before merging.", a: "Left shoulder, full turn. Mirror plus shoulder. Both, every time." }
+          ]
+        },
+        {
+          n: "05", title: "Highway driving — in the flow", sketch: "Speed",
+          intro: "Once merged, the job is maintenance: lane, distance, eyes. Highway speeds compress reaction time — read further ahead than you did on streets.",
+          procLabel: "The four constants",
+          procedure: [
+            "Lane position — stay centered.",
+            "Following distance — 4 seconds at highway speed.",
+            "Mirror checks — every 8 to 10 seconds.",
+            "Look 12+ seconds ahead — know where you'll be in 10 seconds.",
+            "Plan lane changes well in advance.",
+            "Know your escape route at all times."
+          ],
+          watchFor: [
+            "Watching the bumper of the car ahead — that's reactive.",
+            "Following too closely — 4 seconds, not 2 or 3.",
+            "Forgetting to scan mirrors."
+          ],
+          ask: [
+            { q: "Where will you be in 10 seconds? What's there?", a: "If they can't answer, they're not looking far enough ahead." },
+            { q: "How many seconds behind the car ahead?", a: "Pick a landmark and count. Four or more at highway speed." },
+            { q: "When was your last mirror check?", a: "Should be within the last 10 seconds. Longer means they've stopped scanning." }
+          ]
+        },
+        {
+          n: "06", title: "Highway exit", sketch: "Merge", vimeoId: "528902345",
+          intro: "The exit has one non-negotiable: do your slowing on the deceleration lane, not on the highway. Drivers who brake early in the right lane become rolling hazards.",
+          procLabel: "The procedure",
+          procedure: [
+            "Know your exit — plan ahead.",
+            "Signal right at least ¼ mile before.",
+            "Move to the right lane — one lane at a time, shoulder check each.",
+            "Enter the deceleration lane.",
+            { t: "Begin slowing on the deceleration lane, not on the highway.", crit: true },
+            "Follow the posted ramp speed.",
+            "Come to the end of the ramp ready to yield or stop."
+          ],
+          watchFor: [
+            "Braking on the highway before the exit.",
+            "Missing the exit and trying to swerve.",
+            "Going too fast through the ramp."
+          ],
+          ask: [
+            { q: "Where do you start slowing — on the highway, or on the ramp?", a: "On the ramp. The deceleration lane exists for exactly this." },
+            { q: "What's the posted ramp speed?", a: "Most ramps are signed. If not, treat 25–35 as the working range." },
+            { q: "What if you missed the exit?", a: "Take the next one. Never swerve, never reverse on the highway." }
+          ]
+        }
+      ]
+    },
+    {
+      id: 4, num: "04", name: "PASS",
+      subtitle: "Road test rehearsal",
+      cue: "If your student isn't ready, that's information — not failure. Postponing two weeks beats failing the test.",
+      nextHook: "After this — the road test",
+      maneuvers: [
+        {
+          n: "01", title: "Full skill sweep", critical: true, sketch: "Pass",
+          intro: "Lesson 4 starts with a full review — every maneuver from Lessons 1, 2, and 3. The instructor scores against the same rubric the DMV uses. Treat practice the same way.",
+          procLabel: "The skill sweep",
+          procedure: [
+            "Pre-drive checklist — every drive.",
+            "Backing out — full shoulder check.",
+            "Stop signs — complete stop, scan, proceed.",
+            "Speed control — 3-second rule on streets, 4-second on highway.",
+            "Pull-in, back-in, parallel parking, K-turn — clean every time.",
+            "Lane changes — full sequence.",
+            "Left turns — protected and unprotected.",
+            "Highway entry, driving, exit."
+          ],
+          watchFor: [
+            "Skipping a step because it feels routine.",
+            "Letting one maneuver slide because the others were strong.",
+            "Treating mock tests differently from real ones."
+          ],
+          ask: [
+            { q: "Which maneuver feels weakest right now?", a: "Whatever the answer is — drill it next. The weakest one is what fails the test." },
+            { q: "Did you skip a step on that last maneuver?", a: "Examiners notice everything. Practice the full sequence, every time." },
+            { q: "Treat this drive like the road test. What changes?", a: "Nothing should. If the answer is anything other than \"nothing,\" practice has been too casual." }
+          ]
+        },
+        {
+          n: "02", title: "Mock road tests", sketch: "Pass",
+          intro: "Run three to four full mock tests in the two weeks before the road test, on FGL Practice Routes. Score against the FGL scoring sheet — same skills the DMV examiner evaluates.",
+          procLabel: "Running a mock test",
+          procedure: [
+            "Pick an FGL Practice Route — link in the back of the Playbook.",
+            "Print or open the FGL Mock Test Scoring Sheet.",
+            "No coaching during the run — score, don't teach.",
+            "Drive the full route start to finish.",
+            "After: review the scoring sheet together.",
+            "Identify the lowest-scoring skill. Drill it.",
+            "Run another mock 3–5 days later. Compare."
+          ],
+          watchFor: [
+            "Coaching mid-run — invalidates the score.",
+            "Running the same route every time — vary it.",
+            "Stopping the run early because of one mistake."
+          ],
+          ask: [
+            { q: "What did you score lowest on?", a: "Whatever it is — that's the next focus. Don't drift to easier wins." },
+            { q: "Did I stay quiet during the run?", a: "Real road tests have no coaching. Practice the same way." },
+            { q: "Are you running the test, or rehearsing it?", a: "Mock tests are rehearsal. Treat each one as if it counts." }
+          ]
+        },
+        {
+          n: "03", title: "Critical errors", critical: true, sketch: "Stop",
+          intro: "Some errors are automatic fails. Memorize them. Watch for them in every practice drive. Letting one happen twice in a row is a sign you're not ready.",
+          procLabel: "The auto-fail list",
+          procedure: [
+            "Hitting the curb during parallel or K-turn.",
+            "Failing to look over the shoulder before reversing or changing lanes.",
+            "Rolling through a stop sign or red light.",
+            "Striking any object, person, or vehicle.",
+            "Disobeying a sign, signal, or examiner instruction.",
+            "Driving in the wrong lane or wrong direction.",
+            "Unsafe action requiring examiner intervention."
+          ],
+          watchFor: [
+            "Treating a near-miss as a pass — examiners count it as the error.",
+            "Letting the same critical error happen twice — a readiness signal.",
+            "Coaching through a critical error — stop the drive instead."
+          ],
+          ask: [
+            { q: "Name three critical errors. Why do they matter?", a: "Any one ends the test instantly — regardless of everything else." },
+            { q: "Did any of those happen on that drive?", a: "If yes — drill it before the next mock test." },
+            { q: "What's the difference between a deduction and a critical error?", a: "Deductions add up. Critical errors end the test on the spot." }
+          ]
+        },
+        {
+          n: "04", title: "Emergency vehicles & work zones", sketch: "Stop",
+          intro: "Two situations the road test can include — and both are pass-fail moments. Pull right and stop for sirens. Slow and shift over for cones.",
+          procLabel: "Emergency vehicles",
+          procedure: [
+            "Hear or see lights/siren — scan to locate.",
+            "Signal right.",
+            "Pull to the right edge of the road.",
+            "Stop completely.",
+            "Wait until the vehicle has fully passed.",
+            "Check mirrors, signal left, return to traffic."
+          ],
+          watchFor: [
+            "Stopping in the middle of the lane — pull to the edge.",
+            "Pulling over too quickly without signaling.",
+            "Returning to traffic before the vehicle has cleared."
+          ],
+          ask: [
+            { q: "What's the rule for emergency vehicles?", a: "Pull right. Stop. Wait. Then return when clear." },
+            { q: "What changes in a work zone?", a: "Reduced speed, cones channeling traffic, possibly a flagger. Move over a lane if you can, slow if you can't." },
+            { q: "What if the siren is behind a hill?", a: "If you can hear it but can't see it — start scanning and prepare to pull right." }
+          ]
+        },
+        {
+          n: "05", title: "Readiness — Ready, Almost, Not Yet", sketch: "Pass",
+          intro: "After Lesson 4, the instructor gives a readiness rating. Honest ratings beat optimistic ones — postponing two weeks beats failing the test.",
+          procLabel: "The three ratings",
+          procedure: [
+            "Ready — passing mock-test scores, no critical errors in two weeks.",
+            "Almost — one or two skills below standard. 1–2 weeks more practice.",
+            "Not Yet — multiple weak skills or recent critical errors. 3+ weeks.",
+            "Re-test mock scores at each interval.",
+            "Don't book the road test until the rating is Ready."
+          ],
+          watchFor: [
+            "Booking the test against an Almost or Not Yet rating.",
+            "Treating the rating as the parent's call — it's the instructor's.",
+            "Confusing confidence with readiness — they're different."
+          ],
+          ask: [
+            { q: "What was the instructor's rating?", a: "Take it at face value. The instructor has 16 years of pattern-matching." },
+            { q: "What do we work on between now and the test?", a: "The skill that pulled the rating down. One thing at a time." },
+            { q: "Is your student calm or rattled by the rating?", a: "Either is fine. Calm uses it as a plan; rattled needs a parent reminder it's not failure." }
+          ]
+        }
+      ]
+    }
+  ];
+
+  /* ============================================================
+     SKETCHES — hand-drawn monoline SVGs
+     ============================================================ */
+  function Wheel(p) {
+    var size = p.size || 120;
+    return html`<svg width=${size} height=${size} viewBox="0 0 120 120">
+      <g class="sketch">
+        <circle cx="60" cy="60" r="44" />
+        <circle cx="60" cy="60" r="14" />
+        <path d="M60 16 L60 46" /><path d="M60 74 L60 104" />
+        <path d="M16 60 L46 60" /><path d="M74 60 L104 60" />
+        <path d="M30 30 Q44 44 50 50" />
+      </g>
+    </svg>`;
+  }
+  function Backout(p) {
+    var size = p.size || 160;
+    return html`<svg width=${size} height=${size * 0.7} viewBox="0 0 200 140">
+      <g class="sketch">
+        <path d="M30 0 L30 90" /><path d="M90 0 L90 90" /><path d="M30 90 L90 90" />
+        <rect x="40" y="40" width="40" height="48" rx="6" />
+        <path d="M60 100 Q60 116 100 122" stroke-dasharray="3 4" />
+        <path d="M100 122 L92 120 M100 122 L96 130" />
+      </g>
+    </svg>`;
+  }
+  function ParkSpace(p) {
+    var size = p.size || 160;
+    return html`<svg width=${size} height=${size * 0.75} viewBox="0 0 200 150">
+      <g class="sketch">
+        <path d="M40 30 L40 130" /><path d="M100 30 L100 130" /><path d="M160 30 L160 130" />
+        <path d="M40 130 L160 130" />
+        <rect x="58" y="60" width="84" height="50" rx="8" />
+        <path d="M70 60 L80 48 L120 48 L130 60" />
+        <circle cx="74" cy="110" r="4" /><circle cx="126" cy="110" r="4" />
+      </g>
+    </svg>`;
+  }
+  function StopSketch(p) {
+    var size = p.size || 130;
+    return html`<svg width=${size} height=${size} viewBox="0 0 120 120">
+      <g class="sketch">
+        <path d="M40 14 L80 14 L106 40 L106 80 L80 106 L40 106 L14 80 L14 40 Z" />
+        <text x="60" y="68" text-anchor="middle" font-family="VAG Rounded, Arial" font-size="22" font-weight="700" fill="currentColor" stroke="none">STOP</text>
+      </g>
+    </svg>`;
+  }
+  function Speed(p) {
+    var size = p.size || 130;
+    return html`<svg width=${size} height=${size * 0.7} viewBox="0 0 180 126">
+      <g class="sketch">
+        <path d="M20 90 L36 90 L48 64 L120 64 L138 90 L160 90" />
+        <path d="M48 64 L60 50 L110 50 L120 64" />
+        <circle cx="52" cy="96" r="8" /><circle cx="142" cy="96" r="8" />
+        <path d="M0 40 L24 40" /><path d="M4 28 L30 28" /><path d="M0 52 L20 52" />
+      </g>
+    </svg>`;
+  }
+  function Parallel(p) {
+    var size = p.size || 180;
+    return html`<svg width=${size} height=${size * 0.55} viewBox="0 0 220 120">
+      <g class="sketch">
+        <path d="M0 96 L220 96" /><path d="M0 100 L220 100" />
+        <rect x="6" y="62" width="56" height="32" rx="6" />
+        <rect x="156" y="62" width="56" height="32" rx="6" />
+        <g transform="translate(78 38) rotate(-22)"><rect x="0" y="0" width="62" height="34" rx="6" /></g>
+        <path d="M150 40 Q120 56 96 80" stroke-dasharray="3 4" />
+      </g>
+    </svg>`;
+  }
+  function KTurn(p) {
+    var size = p.size || 180;
+    return html`<svg width=${size} height=${size * 0.6} viewBox="0 0 220 132">
+      <g class="sketch">
+        <path d="M0 30 L220 30" /><path d="M0 110 L220 110" />
+        <path d="M40 100 Q90 96 140 50" />
+        <path d="M140 50 Q140 60 110 80" stroke-dasharray="3 4" />
+        <path d="M110 80 Q160 100 200 96" />
+        <rect x="34" y="92" width="32" height="14" rx="3" />
+      </g>
+    </svg>`;
+  }
+  function Merge(p) {
+    var size = p.size || 180;
+    return html`<svg width=${size} height=${size * 0.6} viewBox="0 0 220 132">
+      <g class="sketch">
+        <path d="M0 40 L220 40" />
+        <path d="M0 70 L220 70" stroke-dasharray="6 6" />
+        <path d="M0 120 Q90 120 160 70" />
+        <rect x="120" y="80" width="28" height="14" rx="3" transform="rotate(-22 134 87)" />
+        <path d="M50 55 L80 55" /><path d="M80 55 L74 50 M80 55 L74 60" />
+      </g>
+    </svg>`;
+  }
+  function Lane(p) {
+    var size = p.size || 180;
+    return html`<svg width=${size} height=${size * 0.5} viewBox="0 0 220 110">
+      <g class="sketch">
+        <path d="M0 18 L220 18" />
+        <path d="M0 56 L220 56" stroke-dasharray="6 6" />
+        <path d="M0 94 L220 94" />
+        <rect x="40" y="70" width="32" height="14" rx="3" />
+        <path d="M86 76 Q110 76 130 38" stroke-dasharray="3 4" />
+        <rect x="124" y="28" width="32" height="14" rx="3" />
+      </g>
+    </svg>`;
+  }
+  function LeftTurn(p) {
+    var size = p.size || 160;
+    return html`<svg width=${size} height=${size * 0.85} viewBox="0 0 180 152">
+      <g class="sketch">
+        <path d="M0 60 L72 60 L72 0" />
+        <path d="M0 100 L72 100 L72 152 M108 0 L108 60 L180 60 M108 152 L108 100 L180 100" />
+        <path d="M90 130 L90 92 Q90 80 78 80 L40 80" />
+        <path d="M40 80 L48 74 M40 80 L48 86" />
+      </g>
+    </svg>`;
+  }
+  function Pass(p) {
+    var size = p.size || 140;
+    return html`<svg width=${size} height=${size} viewBox="0 0 140 140">
+      <g class="sketch">
+        <path d="M30 14 L30 130" />
+        <path d="M30 24 L100 24 L100 80 L30 80" />
+        <path d="M30 40 L100 40" /><path d="M30 56 L100 56" /><path d="M30 72 L100 72" />
+        <path d="M44 24 L44 80" /><path d="M58 24 L58 80" />
+        <path d="M72 24 L72 80" /><path d="M86 24 L86 80" />
+      </g>
+    </svg>`;
+  }
+  var Sketch = {
+    Wheel: Wheel, Backout: Backout, ParkSpace: ParkSpace, Stop: StopSketch,
+    Speed: Speed, Parallel: Parallel, KTurn: KTurn, Merge: Merge,
+    Lane: Lane, LeftTurn: LeftTurn, Pass: Pass
+  };
+
+  /* ============================================================
+     ROUTER
+     ============================================================ */
+  function useHashRoute() {
+    var initial = window.location.hash.replace(/^#/, "") || "home";
+    var s = useState(initial);
+    var route = s[0], setRoute = s[1];
+    useEffect(function () {
+      function onHash() {
+        setRoute(window.location.hash.replace(/^#/, "") || "home");
+        window.scrollTo(0, 0);
+      }
+      window.addEventListener("hashchange", onHash);
+      return function () { window.removeEventListener("hashchange", onHash); };
+    }, []);
+    return route;
+  }
+
+  /* ============================================================
+     SHARED COMPONENTS
+     ============================================================ */
+  function TopBarHome() {
+    return html`<div class="tb">
+      <div class="tb__brand"><span class="tb__dot"></span>FGL Parent Playbook</div>
+      <div class="tb__menu"><i></i></div>
+    </div>`;
+  }
+
+  function TopBarLesson() {
+    return html`<div class="tb">
+      <a class="tb__back" href="#">Back to Lessons</a>
+      <div class="tb__menu"><i></i></div>
+    </div>`;
+  }
+
+  function LessonTile(props) {
+    var l = props.lesson;
+    return html`<a class="tile" href=${"#lesson-" + l.id}>
+      <div>
+        <div class="tile__num">Lesson ${l.num}</div>
+        <div class="tile__word">${l.name}</div>
+        <div class="tile__sub">${l.subtitle}</div>
+      </div>
+      <div class="tile__count">${l.maneuvers.length} maneuvers</div>
+      <div class="tile__arrow">›</div>
+    </a>`;
+  }
+
+  /* ============================================================
+     HOMEPAGE
+     ============================================================ */
+  function HomeView() {
+    return html`<div class="phone">
+      <${TopBarHome} />
+      <div class="hero-green">
+        <div class="hero-green__brand"><span class="d"></span>Fresh Green Light</div>
+        <div class="hero-green__title">Parent<br/>Playbook.</div>
+        <div class="hero-green__tag">For the parent in the passenger seat.</div>
+        <div class="hero-green__sub">Coaching your teen through driver education — between every lesson.</div>
+      </div>
+      <div class="sh">
+        <div class="sh__eyebrow">The four lessons</div>
+        <div class="sh__title">Pick a lesson to practice.</div>
+        <div class="sh__lead">Each chapter mirrors what your student just learned with the FGL instructor — same procedures, same words.</div>
+      </div>
+      <div class="body-pad" style=${{ display: "flex", flexDirection: "column", gap: "12px", paddingTop: "18px" }}>
+        ${LESSONS.map(function (l) { return html`<${LessonTile} key=${l.id} lesson=${l} />`; })}
+      </div>
+      <div class="fend">
+        <div class="fend__url">www.freshgreenlight.com</div>
+        <div class="fend__c">FGL BTW 3.0 · Parent Playbook · v.1</div>
+      </div>
+    </div>`;
+  }
+
+  /* ============================================================
+     LESSON SUB-COMPONENTS
+     ============================================================ */
+  function StepRow(props) {
+    var s = useState(false);
+    var checked = s[0], setChecked = s[1];
+    var step = props.step, idx = props.idx;
+    var isObj = typeof step === "object";
+    var text = isObj ? step.t : step;
+    var crit = isObj && step.crit;
+    return html`<div class=${"step " + (checked ? "is-checked" : "")} onClick=${function () { setChecked(!checked); }}>
+      <div class="step__num">${idx + 1}</div>
+      <div class="step__body">
+        ${text}
+        ${crit && html`<div><span class="step__crit">Critical Skill</span></div>`}
+      </div>
+    </div>`;
+  }
+
+  function AskCard(props) {
+    var s = useState(false);
+    var flipped = s[0], setFlipped = s[1];
+    return html`<div class=${"askcard " + (flipped ? "is-flipped" : "")} onClick=${function () { setFlipped(!flipped); }}>
+      <div class="askcard__inner">
+        <div class="askcard__face askcard__face--front">
+          <div class="askcard__q">"${props.q}"</div>
+          <div class="askcard__hint">Tap to flip ›</div>
+        </div>
+        <div class="askcard__face askcard__face--back">
+          <div class="askcard__alabel">Listen for</div>
+          <div class="askcard__a">${props.a}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function VideoSlot(props) {
+    if (props.vimeoId) {
+      return html`<div class="video">
+        <iframe src=${"https://player.vimeo.com/video/" + props.vimeoId} allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      </div>`;
+    }
+    return html`<div class="video">
+      <div class="video__placeholder">
+        <div class="video__play"></div>
+        <div class="video__label">${props.label || "Video tutorial"}</div>
+      </div>
+    </div>`;
+  }
+
+  function ManeuverCard(props) {
+    var m = props.m, open = props.open, onToggle = props.onToggle, onClose = props.onClose, anchorId = props.anchorId;
+    var SketchIcon = Sketch[m.sketch];
+    return html`<div class=${"man " + (open ? "is-open" : "")} id=${anchorId}>
+      <div class="man__head" onClick=${onToggle}>
+        <div class="man__num">${m.n}</div>
+        <div>
+          <div class="man__title">${m.title}</div>
+          ${m.critical && html`<span class="man__crit">Road Test Critical</span>`}
+        </div>
+        <div class="man__chev">›</div>
+      </div>
+      ${open && html`<div class="man__body">
+        <div style=${{ padding: "18px 22px 0", color: "var(--ink-700)" }}>
+          <p style=${{ fontSize: "14px", lineHeight: 1.5 }}>${m.intro}</p>
+        </div>
+        ${m.vimeoId && html`<${VideoSlot} vimeoId=${m.vimeoId} label=${m.title + " · tutorial"} />`}
+        <div class="proc-title">${m.procLabel} · tap to check off</div>
+        <div class="body-pad">
+          ${m.procedure.map(function (s, i) { return html`<${StepRow} key=${i} step=${s} idx=${i} />`; })}
+        </div>
+        <div class="watchfor">
+          <div class="watchfor__title">Watch for</div>
+          <ul>${m.watchFor.map(function (w, i) { return html`<li key=${i}>${w}</li>`; })}</ul>
+        </div>
+        <div style=${{ padding: "22px 22px 4px" }}>
+          <div class="eyebrow" style=${{ marginBottom: "6px" }}>Ask your driver</div>
+          <div style=${{ fontSize: "12px", color: "var(--ink-500)" }}>Tap a card to flip — hear what to listen for.</div>
+        </div>
+        <div class="askdeck">
+          ${m.ask.map(function (a, i) { return html`<${AskCard} key=${i} q=${a.q} a=${a.a} />`; })}
+        </div>
+        <button class="man__close" onClick=${onClose} type="button">Close drill</button>
+      </div>`}
+    </div>`;
+  }
+
+  function TargetTile(props) {
+    return html`<button class=${"ttile " + (props.critical ? "is-crit" : "")} onClick=${props.onJump} type="button">
+      <div class="ttile__num">${String(props.idx).padStart(2, "0")}</div>
+      <div class="ttile__title">${props.title}</div>
+      ${props.critical && html`<div class="ttile__crit">Road Test Critical</div>`}
+      <div class="ttile__cta">Jump to drill ›</div>
+    </button>`;
+  }
+
+  /* ============================================================
+     LESSON VIEW
+     ============================================================ */
+  function LessonView(props) {
+    var lesson = props.lesson;
+    var s = useState(0);
+    var openIdx = s[0], setOpenIdx = s[1];
+    var drillsAnchorRef = useRef(null);
+
+    var jumpTo = useCallback(function (i) {
+      setOpenIdx(i);
+      setTimeout(function () {
+        var el = document.getElementById("m-" + lesson.id + "-" + i);
+        if (el) {
+          var top = el.getBoundingClientRect().top + window.scrollY - 60;
+          window.scrollTo({ top: top, behavior: "smooth" });
+        }
+      }, 60);
+    }, [lesson.id]);
+
+    var closeDrill = useCallback(function () {
+      var i = openIdx;
+      setOpenIdx(-1);
+      setTimeout(function () {
+        var el = document.getElementById("m-" + lesson.id + "-" + i);
+        if (el) {
+          var top = el.getBoundingClientRect().top + window.scrollY - 60;
+          window.scrollTo({ top: top, behavior: "smooth" });
+        }
+      }, 40);
+    }, [openIdx, lesson.id]);
+
+    var backToDrills = useCallback(function () {
+      var el = drillsAnchorRef.current;
+      if (el) {
+        var top = el.getBoundingClientRect().top + window.scrollY - 12;
+        window.scrollTo({ top: top, behavior: "smooth" });
+      }
+    }, []);
+
+    var drillIsOpen = openIdx >= 0;
+    var nextLabel = lesson.nextHook.replace(/^Up next — /, "").replace(/^After this — /, "");
+
+    return html`<div class="phone">
+      <${TopBarLesson} />
+      <div class="opener">
+        <div class="opener__eyebrow">FGL Parent Playbook</div>
+        <div class="opener__num">Lesson ${lesson.num}</div>
+        <div class="opener__word">${lesson.name}</div>
+        <div class="opener__sub">${lesson.subtitle}</div>
+      </div>
+
+      <div class="sh" style=${{ paddingTop: "24px" }} ref=${drillsAnchorRef}>
+        <div class="sh__eyebrow">Today's drills</div>
+        <div class="sh__title">Practice these before ${nextLabel}.</div>
+        <div class="sh__lead">Tap a tile to jump straight to the drill.</div>
+      </div>
+      <div class="ttile-grid">
+        ${lesson.maneuvers.map(function (m, i) {
+          return html`<${TargetTile}
+            key=${m.n}
+            idx=${i + 1}
+            title=${m.title}
+            critical=${m.critical}
+            onJump=${function () { jumpTo(i); }}
+          />`;
+        })}
+      </div>
+
+      <div class="cue">
+        <div class="cue__title">Coach cue</div>
+        <div class="cue__quote">"${lesson.cue}"</div>
+      </div>
+
+      <div style=${{ marginTop: "18px" }}>
+        <div class="sh">
+          <div class="sh__eyebrow">The drills</div>
+          <div class="sh__title">Tap any to expand.</div>
+        </div>
+        <div style=${{ marginTop: "12px", borderTop: "1px solid var(--ink-100)" }}>
+          ${lesson.maneuvers.map(function (m, i) {
+            return html`<${ManeuverCard}
+              key=${m.n}
+              m=${m}
+              open=${openIdx === i}
+              onToggle=${function () { setOpenIdx(openIdx === i ? -1 : i); }}
+              onClose=${closeDrill}
+              anchorId=${"m-" + lesson.id + "-" + i}
+            />`;
+          })}
+        </div>
+      </div>
+
+      <div class="pact">
+        <div class="pact__eyebrow">Between every lesson</div>
+        <div class="pact__num">8<span>hrs</span></div>
+        <div class="pact__title">Of supervised practice. That's the goal.</div>
+        <div class="pact__lead">The eight hours your teen spends with FGL is the foundation. The hours you spend together is what builds the actual driver.</div>
+      </div>
+
+      <div class="fend">
+        <div class="fend__url">www.freshgreenlight.com</div>
+        <div class="fend__c">FGL BTW 3.0 · Lesson ${lesson.num} · ${lesson.name}</div>
+      </div>
+
+      <button
+        type="button"
+        class=${"backtop " + (drillIsOpen ? "is-visible" : "")}
+        onClick=${backToDrills}
+        aria-label="Back to drills"
+      >Drills</button>
+    </div>`;
+  }
+
+  /* ============================================================
+     APP
+     ============================================================ */
+  function App() {
+    var route = useHashRoute();
+    var m = route.match(/^lesson-(\d+)$/);
+    if (m) {
+      var id = parseInt(m[1], 10);
+      for (var i = 0; i < LESSONS.length; i++) {
+        if (LESSONS[i].id === id) {
+          return html`<${LessonView} lesson=${LESSONS[i]} />`;
+        }
+      }
+    }
+    return html`<${HomeView} />`;
+  }
+
+  render(h(App, null), document.getElementById("root"));
+})();
+</script>
+</body>
+</html>
