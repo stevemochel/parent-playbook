@@ -1,0 +1,8 @@
+# Netlify configuration for the FGL Parent Playbook companion site.
+#
+# This is a static single-file app: index.html + fonts/ live in the
+# parent-playbook/ subfolder (there is no build step). Pinning the publish
+# directory here makes it authoritative and version-controlled, so the deploy
+# no longer depends on the dashboard field being set correctly.
+[build]
+  publish = "parent-playbook"
