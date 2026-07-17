@@ -1,0 +1,165 @@
+/* =========================================================
+   Fresh Green Light — Design Tokens
+   Single source of truth for colors, type, spacing, radii.
+   ========================================================= */
+
+@font-face {
+  font-family: "VAG Rounded";
+  src: url("fonts/VAG Rounded Bold.otf") format("opentype"),
+       url("fonts/Adobe_-_VAGRoundedStd-Bold.otf") format("opentype"),
+       url("fonts/VAGRoundedStd-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "VAG Rounded";
+  src: url("fonts/VAG Rounded Light.otf") format("opentype"),
+       url("fonts/Adobe_-_VAGRoundedStd-Light.otf") format("opentype"),
+       url("fonts/VAGRoundedStd-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Also register under the literal weight names the review tool expects */
+@font-face {
+  font-family: "VAG Rounded Bold";
+  src: url("fonts/VAG Rounded Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "VAG Rounded Light";
+  src: url("fonts/VAG Rounded Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- Brand color ---------- */
+  --fgl-green:        #2D9B14;   /* primary */
+  --fgl-green-deep:   #1F6E0E;   /* hover / pressed */
+  --fgl-green-soft:   #E8F5E3;   /* tinted surfaces */
+  --fgl-green-tint:   #F4FAF1;   /* whisper surfaces */
+
+  --fgl-orange:       #FF8000;   /* accent */
+  --fgl-orange-deep:  #CC6600;
+  --fgl-orange-soft:  #FFF1E0;
+
+  /* ---------- Neutrals ---------- */
+  --ink-1000: #0B0F0A;   /* headlines on white */
+  --ink-900:  #1A1F1B;   /* default body */
+  --ink-700:  #3E4842;   /* secondary */
+  --ink-500:  #6B7280;   /* tertiary / captions */
+  --ink-300:  #B8BEB6;   /* disabled / hints */
+  --ink-200:  #D8DCD7;   /* hairline dividers */
+  --ink-100:  #EEF0ED;   /* quiet fills */
+  --ink-50:   #F6F7F5;   /* page alt surface */
+  --white:    #FFFFFF;
+
+  /* ---------- Semantic ---------- */
+  --bg:            var(--white);
+  --bg-alt:        var(--ink-50);
+  --surface:       var(--white);
+  --border:        var(--ink-200);
+  --border-strong: var(--ink-300);
+
+  /* ---------- Type ---------- */
+  --font-head: "VAG Rounded", "Arial Rounded MT Bold", Arial, system-ui, sans-serif;
+  --font-body: "VAG Rounded", Arial, system-ui, sans-serif;
+  --font-sys:  Arial, Helvetica, system-ui, sans-serif;
+
+  /* Size scale — display-down. 1rem = 16px. */
+  --fs-display:  clamp(48px, 5.6vw, 84px);
+  --fs-h1:       clamp(36px, 4vw, 56px);
+  --fs-h2:       clamp(28px, 3vw, 40px);
+  --fs-h3:       28px;
+  --fs-h4:       22px;
+  --fs-lead:     20px;
+  --fs-body:     17px;
+  --fs-small:    15px;
+  --fs-micro:    13px;
+  --fs-eyebrow:  12px;
+
+  /* Line heights */
+  --lh-tight:   1.05;
+  --lh-snug:    1.2;
+  --lh-normal:  1.45;
+  --lh-loose:   1.6;
+
+  /* Tracking */
+  --tr-eyebrow: 0.14em;
+  --tr-headline: -0.01em;
+
+  /* ---------- Spacing (4pt) ---------- */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+  --s-32: 128px;
+
+  /* ---------- Radii ---------- */
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   16px;
+  --r-xl:   24px;
+  --r-pill: 999px;
+
+  /* ---------- Shadows ---------- */
+  --shadow-sm: 0 1px 2px rgba(15, 31, 12, 0.06);
+  --shadow-md: 0 6px 18px rgba(15, 31, 12, 0.08), 0 1px 2px rgba(15, 31, 12, 0.04);
+  --shadow-lg: 0 20px 40px rgba(15, 31, 12, 0.10), 0 2px 6px rgba(15, 31, 12, 0.05);
+  --shadow-green: 0 10px 24px rgba(45, 155, 20, 0.22);
+
+  /* ---------- Motion ---------- */
+  --ease-out: cubic-bezier(.2,.7,.2,1);
+  --ease-in-out: cubic-bezier(.6,.05,.3,1);
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+}
+
+/* ---------- Base ---------- */
+html, body {
+  background: var(--bg);
+  color: var(--ink-900);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--fs-body);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,h2,h3,h4,h5 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: var(--tr-headline);
+  color: var(--ink-1000);
+  line-height: var(--lh-snug);
+  margin: 0;
+}
+
+p { margin: 0; }
+
+/* Helpers */
+.eyebrow {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  color: var(--fgl-green);
+}

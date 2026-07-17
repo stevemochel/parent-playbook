@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>FGL Front Desk Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#2D9B14" />
+<meta name="robots" content="noindex,nofollow" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%232D9B14'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  body { background: #fff; margin: 0; }
+  #app { min-height: 100vh; display: flex; flex-direction: column; }
+  a { color: var(--fgl-green); text-decoration: none; }
+  a:hover { color: var(--fgl-green-deep); }
+  input { font-family: var(--font-sys); }
+  input:focus { outline: 2px solid var(--fgl-green); outline-offset: 1px; }
+
+  /* Hover treatments (ported from the prototype's style-hover) */
+  .hcard:hover  { border-color: var(--fgl-green) !important; box-shadow: var(--shadow-md); }
+  .href:hover   { background: var(--fgl-green-soft) !important; }
+  .chip:hover   { background: var(--fgl-green-soft) !important; color: var(--fgl-green-deep) !important; }
+  .result:hover { background: var(--fgl-green-tint) !important; }
+  .acc-head:hover { background: var(--fgl-green-tint) !important; }
+
+  @media (max-width: 900px) {
+    .home-grid { grid-template-columns: 1fr !important; }
+    .cols2 { column-count: 1 !important; }
+    .facts4 { grid-template-columns: repeat(2, 1fr) !important; }
+    .refs3, .staff3 { grid-template-columns: repeat(2, 1fr) !important; }
+    .split2 { grid-template-columns: 1fr !important; }
+    .nav-scroll { overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="overlay-slot"></div>
+
+<script type="module">
+import * as D from "./content.js";
+
+/* ---------------- state ---------------- */
+const state = { q: "", route: location.hash || "#/", permitDate: "", open: {} };
+
+/* ---------------- helpers ---------------- */
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"]/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])
+  );
+}
+function fmt(dt) {
+  return dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+/* ---------------- search index ---------------- */
+let IDX = null;
+function buildIndex() {
+  const idx = [];
+  const add = (title, sub, kind, hash, body) =>
+    idx.push({ title, sub, kind, hash, body: (title + " " + (sub || "") + " " + (body || "")).toLowerCase() });
+  D.plays.forEach((p) => {
+    const sec = D.sections.find((s) => s.letter === p.section);
+    let body = p.id + " " + (p.warn || "") + " " + (p.footer || "");
+    p.blocks.forEach((b) => {
+      body += " " + (b.title || "") + " " + (b.say || "");
+      (b.rows || []).forEach((r) => { body += " " + r.text + " " + (r.sub || ""); });
+    });
+    add(p.title, sec.name, "Play " + p.id, "#/plays/" + p.id, body);
+  });
+  D.policyGroups.forEach((g) => g.rows.forEach((r) => add(r.text, r.sub, "Policy", "#/policies", g.title + " " + r.tag)));
+  D.pricing.forEach((r) => add(r.name + " — " + r.price, r.sub, "Pricing", "#/pricing", ""));
+  D.systems.forEach((s) => add(s.name, s.sub, "System", "#/guides", s.tag));
+  D.people.forEach((p) => add(p.name + " — " + p.role, p.focus, "People", "#/people", ""));
+  D.locations.forEach((l) => add(l.name + " · LTL " + l.ltl, l.sub, "Location", "#/people", ""));
+  D.escalation.forEach((e) => add(e.sit + " → " + e.who, e.how, "Escalate", "#/people", ""));
+  D.backup.forEach((b) => add(b.task, "Owner: " + b.owner + " · Backup: " + b.backup, "Backup", "#/people", ""));
+  D.contacts.forEach((c) => add(c.name, c.detail, "Contact", "#/people", ""));
+  D.ops.forEach((g) => g.items.forEach((it) => {
+    let body = g.freq + " " + (it.note || "");
+    it.rows.forEach((r) => { body += " " + r.text + " " + (r.sub || ""); });
+    add(it.title, g.freq + " · " + it.owner, "Ops", "#/ops/" + it.id, body);
+  }));
+  D.guides.forEach((gd) => {
+    let body = (gd.note || "") + " " + (gd.footer || "");
+    gd.rows.forEach((r) => { body += " " + r.text + " " + (r.sub || ""); });
+    add(gd.title, gd.owner, "Guide", "#/guides/" + gd.id, body);
+  });
+  D.quickFacts.forEach((f) => add(f.big, f.label, "Quick fact", "#/policies", ""));
+  IDX = idx;
+}
+function search(q) {
+  if (!IDX) return [];
+  const toks = q.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!toks.length) return [];
+  const scored = [];
+  IDX.forEach((e) => {
+    let score = 0;
+    for (const t of toks) {
+      if (!e.body.includes(t)) return;
+      score += e.title.toLowerCase().includes(t) ? 5 : 1;
+      if (e.kind.toLowerCase().includes(t)) score += 3;
+    }
+    scored.push([score, e]);
+  });
+  scored.sort((a, b) => b[0] - a[0]);
+  return scored.slice(0, 9).map(([, e]) => e);
+}
+
+/* ---------------- navigation ---------------- */
+function go(hash) {
+  if (location.hash === hash) {
+    state.q = ""; state.open = {}; window.scrollTo(0, 0); render();
+  } else {
+    location.hash = hash;
+  }
+}
+function onHash() {
+  state.route = location.hash || "#/"; state.q = ""; state.open = {};
+  window.scrollTo(0, 0); render();
+}
+function currentView() {
+  const route = state.route || "#/";
+  const seg = route.replace(/^#\//, "").split("/");
+  return { view: seg[0] || "home", param: seg[1] || "" };
+}
+
+/* ---------------- header + footer ---------------- */
+function headerHTML() {
+  const { view } = currentView();
+  const navDefs = [
+    ["Home", "#/", "home"], ["Plays", "#/plays", "plays"], ["Policies", "#/policies", "policies"],
+    ["Pricing", "#/pricing", "pricing"], ["Ops Calendar", "#/ops", "ops"],
+    ["System Guides", "#/guides", "guides"], ["People", "#/people", "people"]
+  ];
+  const nav = navDefs.map(([label, hash, v]) => {
+    const active = view === v || (v === "home" && view === "");
+    const color = active ? "var(--fgl-green)" : "var(--ink-700)";
+    const line = active ? "var(--fgl-green)" : "transparent";
+    return `<span data-go="${hash}" style="cursor:pointer;font-family:var(--font-head);font-weight:700;font-size:13.5px;white-space:nowrap;color:${color};padding:19px 0 17px;border-bottom:2px solid ${line};">${esc(label)}</span>`;
+  }).join("");
+
+  return `
+  <div style="position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid var(--ink-200);">
+    <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:24px;padding:0 24px;height:60px;">
+      <div data-go="#/" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+        <div style="width:12px;height:12px;border-radius:50%;background:var(--fgl-green);box-shadow:0 0 0 4px var(--fgl-green-soft);"></div>
+        <span style="font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--ink-1000);white-space:nowrap;">FGL Desk</span>
+      </div>
+      <div class="nav-scroll" style="display:flex;gap:20px;">${nav}</div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:center;gap:8px;background:var(--ink-50);border:1px solid var(--ink-200);border-radius:9px;padding:7px 12px;width:240px;">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#6B7280" stroke-width="2"></circle><path d="M14 14l4 4" stroke="#6B7280" stroke-width="2" stroke-linecap="round"></path></svg>
+          <input id="hdr-search" type="text" placeholder="Search…" value="${esc(state.q)}" style="border:none;background:transparent;font-size:13px;width:100%;color:var(--ink-900);">
+          <span style="font-family:var(--font-sys);font-size:10px;color:var(--ink-500);border:1px solid var(--ink-200);border-radius:4px;padding:1px 5px;background:#fff;">⌘K</span>
+        </div>
+        <span style="font-size:10.5px;font-family:var(--font-head);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--fgl-orange);background:var(--fgl-orange-soft);padding:4px 10px;border-radius:999px;white-space:nowrap;">Confidential</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function footerHTML() {
+  return `
+  <div style="display:flex;align-items:center;gap:24px;padding:13px 24px;background:var(--ink-1000);color:#fff;font-size:13px;flex-wrap:wrap;">
+    <span class="eyebrow" style="color:#7BC96A;">Escalate</span>
+    <span><strong style="font-family:var(--font-head);">Anisia</strong> · scheduling / complaints — email, text if urgent</span>
+    <span><strong style="font-family:var(--font-head);">Daphney</strong> · DMV / road tests / fleet</span>
+    <span><strong style="font-family:var(--font-head);">Steve</strong> · website / refund approval</span>
+    <span style="margin-left:auto;color:var(--fgl-orange);">Safety emergency: 911 first</span>
+    <span style="color:var(--ink-300);font-size:11.5px;">(203) 861-1188 · Confidential — internal use only</span>
+  </div>`;
+}
+
+/* ---------------- search overlay ---------------- */
+function renderOverlay() {
+  const slot = document.getElementById("overlay-slot");
+  if (!slot) return;
+  const q = state.q;
+  if (!q.trim()) { slot.innerHTML = ""; return; }
+  const results = search(q);
+  const rows = results.map((r) => `
+    <div class="result" data-go="${esc(r.hash)}" style="display:flex;align-items:flex-start;gap:12px;padding:12px 18px;border-bottom:1px solid var(--ink-100);cursor:pointer;">
+      <span style="font-family:var(--font-head);font-weight:700;font-size:11px;color:var(--fgl-green-deep);background:var(--fgl-green-soft);border-radius:6px;padding:3px 8px;white-space:nowrap;margin-top:1px;">${esc(r.kind)}</span>
+      <span style="flex:1;">
+        <span style="display:block;font-family:var(--font-head);font-weight:700;font-size:14px;color:var(--ink-1000);">${esc(r.title)}</span>
+        <span style="display:block;font-size:12.5px;color:var(--ink-500);margin-top:1px;">${esc(r.sub)}</span>
+      </span>
+    </div>`).join("");
+  const empty = results.length === 0
+    ? `<div style="padding:20px 18px;font-size:14px;color:var(--ink-500);">No matches. Try a fee amount, a play code (C2), a person, or a system name.</div>`
+    : "";
+  slot.innerHTML = `
+    <div data-clearq="1" style="position:fixed;inset:0;z-index:50;background:rgba(11,15,10,0.18);">
+      <div style="position:absolute;top:76px;left:50%;transform:translateX(-50%);width:680px;max-width:92vw;max-height:70vh;overflow:auto;background:#fff;border:1px solid var(--ink-200);border-radius:14px;box-shadow:var(--shadow-lg);">
+        ${rows}${empty}
+        <div style="padding:8px 18px;background:var(--ink-50);font-size:11.5px;color:var(--ink-500);font-family:var(--font-sys);">Enter opens the top result · Esc closes</div>
+      </div>
+    </div>`;
+}
+
+/* ---------------- views ---------------- */
+function homeHTML() {
+  const counts = {};
+  D.plays.forEach((p) => { counts[p.section] = (counts[p.section] || 0) + 1; });
+  const sectionCards = D.sections.map((s) => `
+    <div class="hcard" data-go="#/plays/${s.letter}" style="break-inside:avoid;margin-bottom:12px;box-sizing:border-box;border:1px solid var(--ink-200);border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;cursor:pointer;background:#fff;">
+      <div style="width:34px;height:34px;border-radius:9px;background:var(--fgl-green-soft);color:var(--fgl-green-deep);font-family:var(--font-head);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${esc(s.letter)}</div>
+      <div style="flex:1;">
+        <div style="font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--ink-1000);">${esc(s.name)}</div>
+        <div style="font-size:13px;color:var(--ink-500);margin-top:2px;">${esc(s.desc)}</div>
+      </div>
+      <span style="font-size:12px;color:var(--ink-500);font-family:var(--font-head);font-weight:700;white-space:nowrap;">${counts[s.letter]} plays</span>
+    </div>`).join("");
+
+  const refs = [
+    { name: "Ops Calendar", desc: "Daily → Annual checklists by owner", hash: "#/ops" },
+    { name: "System Guides", desc: "DSS, Zoom, DMV portal step-by-steps", hash: "#/guides" },
+    { name: "People & Locations", desc: "Directory, LTLs, backup matrix", hash: "#/people" }
+  ].map((r) => `
+    <div class="href" data-go="${r.hash}" style="background:var(--ink-50);border-radius:12px;padding:16px 18px;cursor:pointer;">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--ink-1000);">${esc(r.name)}</div>
+      <div style="font-size:13px;color:var(--ink-500);margin-top:2px;">${esc(r.desc)}</div>
+    </div>`).join("");
+
+  const chips = ["Late cancel fee", "$999 vs $975", "Attendance dispute", "Weather cancellation", "eDEC", "Au pair"]
+    .map((label) => `<span class="chip" data-chip="${esc(label)}" style="font-size:13px;font-family:var(--font-head);font-weight:700;color:var(--ink-700);background:var(--ink-100);padding:7px 14px;border-radius:999px;cursor:pointer;">${esc(label)}</span>`).join("");
+
+  const railPrices = D.pricing.map((p) => `
+    <div style="display:flex;justify-content:space-between;gap:10px;padding:8px 16px;border-bottom:1px solid var(--ink-100);font-size:13.5px;">
+      <span style="color:var(--ink-700);">${esc(p.name)}</span>
+      <span style="font-family:var(--font-head);font-weight:700;color:var(--ink-1000);white-space:nowrap;">${esc(p.price)}</span>
+    </div>`).join("");
+
+  const defs = [["30-Hr teen (121d)", 121], ["8-Hr teen (181d)", 181], ["Adult (91d)", 91]];
+  let calcRows;
+  const pd = state.permitDate;
+  if (pd) {
+    const [y, m, day] = pd.split("-").map(Number);
+    calcRows = defs.map(([name, days]) => ({ name, date: fmt(new Date(y, m - 1, day + days)) }));
+  } else {
+    calcRows = defs.map(([name]) => ({ name, date: "—" }));
+  }
+  const calcRowsHTML = calcRows.map((cr) => `
+    <div style="display:flex;justify-content:space-between;font-size:13.5px;">
+      <span style="color:var(--ink-700);">${esc(cr.name)}</span>
+      <span style="font-family:var(--font-head);font-weight:700;color:var(--fgl-green-deep);">${esc(cr.date)}</span>
+    </div>`).join("");
+
+  return `
+  <div style="flex:1;">
+    <div style="padding:52px 24px 36px;display:flex;flex-direction:column;align-items:center;gap:20px;background:linear-gradient(180deg, var(--fgl-green-tint), #fff);">
+      <h1 style="font-size:34px;">What do you need?</h1>
+      <div style="width:720px;max-width:90vw;display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--fgl-green);border-radius:14px;padding:14px 20px;box-shadow:var(--shadow-green);">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#2D9B14" stroke-width="2"></circle><path d="M14 14l4 4" stroke="#2D9B14" stroke-width="2" stroke-linecap="round"></path></svg>
+        <input id="hero-search" type="text" placeholder="Search plays, policies, prices, people…" value="${esc(state.q)}" style="border:none;background:transparent;font-size:17px;width:100%;color:var(--ink-900);">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">${chips}</div>
+    </div>
+    <div class="home-grid" style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 348px;gap:28px;padding:8px 24px 48px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:12px;">Plays — find the situation, follow the play</div>
+        <div class="cols2" style="column-count:2;column-gap:12px;">${sectionCards}</div>
+        <div class="eyebrow" style="margin:26px 0 12px;">Reference</div>
+        <div class="refs3" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;">${refs}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;">
+          <div data-go="#/pricing" style="background:var(--fgl-green);color:#fff;font-family:var(--font-head);font-weight:700;font-size:13px;padding:10px 16px;letter-spacing:0.06em;text-transform:uppercase;display:flex;justify-content:space-between;cursor:pointer;"><span>Pricing at a glance</span><span>→</span></div>
+          ${railPrices}
+        </div>
+        <div style="border:1px solid var(--ink-200);border-radius:12px;padding:16px;">
+          <div class="eyebrow" style="margin-bottom:10px;">Escalate to</div>
+          <div style="display:flex;flex-direction:column;gap:9px;font-size:13.5px;">
+            <div style="display:flex;justify-content:space-between;gap:12px;"><span style="font-family:var(--font-head);font-weight:700;">Anisia</span><span style="color:var(--ink-500);text-align:right;">Scheduling · complaints · refunds · DSS down</span></div>
+            <div style="display:flex;justify-content:space-between;gap:12px;"><span style="font-family:var(--font-head);font-weight:700;">Daphney</span><span style="color:var(--ink-500);text-align:right;">DMV · road tests · fleet</span></div>
+            <div style="display:flex;justify-content:space-between;gap:12px;"><span style="font-family:var(--font-head);font-weight:700;">Steve</span><span style="color:var(--ink-500);text-align:right;">Website · refund approval</span></div>
+            <div style="font-size:12.5px;color:var(--fgl-orange-deep);font-family:var(--font-head);font-weight:700;">Safety emergency: 911 first</div>
+          </div>
+        </div>
+        <div style="background:var(--fgl-green-tint);border:1px solid var(--fgl-green-soft);border-radius:12px;padding:16px;">
+          <div style="font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--ink-1000);">Permit-hold calculator</div>
+          <div style="font-size:13px;color:var(--ink-700);margin:5px 0 10px;">Permit issue date → earliest road test date</div>
+          <input type="date" value="${esc(state.permitDate)}" style="width:100%;box-sizing:border-box;background:#fff;border:1px solid var(--ink-200);border-radius:8px;padding:9px 12px;font-size:14px;color:var(--ink-900);">
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">${calcRowsHTML}</div>
+          <div style="font-size:11.5px;color:var(--ink-500);margin-top:10px;">Holds: 121 days (30-Hr teen) · 181 (8-Hr teen) · 91 (adult). All requirements must also be done 2+ weeks before the test.</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function playsIndexHTML(filter) {
+  const pills = [{ letter: "", label: "All" }]
+    .concat(D.sections.map((s) => ({ letter: s.letter, label: s.letter + " · " + s.name })))
+    .map((f) => {
+      const active = filter === f.letter;
+      const bg = active ? "var(--fgl-green)" : "var(--ink-100)";
+      const color = active ? "#fff" : "var(--ink-700)";
+      const hash = f.letter ? "#/plays/" + f.letter : "#/plays";
+      return `<span data-go="${hash}" style="font-size:13px;font-family:var(--font-head);font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;background:${bg};color:${color};">${esc(f.label)}</span>`;
+    }).join("");
+
+  const groups = D.sections.filter((s) => !filter || s.letter === filter).map((s) => {
+    const plays = D.plays.filter((p) => p.section === s.letter).map((p) => `
+      <div class="hcard" data-go="#/plays/${esc(p.id)}" style="break-inside:avoid;margin-bottom:10px;box-sizing:border-box;border:1px solid var(--ink-200);border-radius:10px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:#fff;">
+        <span style="font-family:var(--font-head);font-weight:700;font-size:13px;color:var(--fgl-green-deep);background:var(--fgl-green-soft);border-radius:7px;padding:3px 8px;flex-shrink:0;">${esc(p.id)}</span>
+        <span style="font-size:14px;color:var(--ink-900);line-height:1.35;">${esc(p.title)}</span>
+      </div>`).join("");
+    return `
+    <div style="margin-bottom:26px;">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;">
+        <span style="font-family:var(--font-head);font-weight:700;font-size:18px;color:var(--ink-1000);">Section ${esc(s.letter)} — ${esc(s.name)}</span>
+        <span style="font-size:13px;color:var(--ink-500);">${esc(s.desc)}</span>
+      </div>
+      <div class="cols2" style="column-count:2;column-gap:10px;">${plays}</div>
+    </div>`;
+  }).join("");
+
+  return `
+  <div style="flex:1;max-width:1080px;width:100%;margin:0 auto;padding:32px 24px 56px;box-sizing:border-box;">
+    <div class="eyebrow">The FGL Playbook</div>
+    <h1 style="font-size:30px;margin-top:4px;">Find the situation. Follow the play.</h1>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 24px;">${pills}</div>
+    ${groups}
+  </div>`;
+}
+
+function playDetailHTML(play) {
+  const sec = D.sections.find((s) => s.letter === play.section);
+  const warn = play.warn ? `
+    <div style="background:var(--fgl-orange-soft);border:1px solid #F5D9B8;border-radius:12px;padding:14px 18px;margin-bottom:18px;">
+      <span style="font-family:var(--font-head);font-weight:700;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--fgl-orange-deep);display:block;margin-bottom:4px;">Watch out</span>
+      <span style="font-size:14.5px;color:var(--ink-900);">${esc(play.warn)}</span>
+    </div>` : "";
+
+  const blocks = play.blocks.map((b) => {
+    const say = b.say ? `<div style="padding:16px 18px;background:var(--fgl-green-tint);font-size:15px;color:var(--ink-900);line-height:1.6;">“${esc(b.say)}”</div>` : "";
+    const rows = (b.rows || []).map((r) => `
+      <div style="display:flex;gap:12px;padding:10px 16px;border-top:1px solid var(--ink-100);font-size:14px;align-items:flex-start;">
+        <span style="width:22px;height:22px;border-radius:7px;background:var(--fgl-green-soft);color:var(--fgl-green-deep);font-family:var(--font-head);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">${esc(r.n)}</span>
+        <span style="flex:1;"><span style="color:var(--ink-900);">${esc(r.text)}</span>${r.sub ? `<span style="display:block;font-size:12.5px;color:var(--ink-500);margin-top:1px;">${esc(r.sub)}</span>` : ""}</span>
+        ${r.tag ? `<span style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--ink-500);white-space:nowrap;margin-top:3px;">${esc(r.tag)}</span>` : ""}
+      </div>`).join("");
+    return `
+    <div style="border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;background:#fff;">
+      <div style="padding:11px 16px;background:var(--ink-50);border-bottom:1px solid var(--ink-200);font-family:var(--font-head);font-weight:700;font-size:13.5px;color:var(--ink-1000);">${esc(b.title)}</div>
+      ${say}${rows}
+    </div>`;
+  }).join("");
+
+  const footer = play.footer ? `<div style="background:var(--ink-50);border-radius:12px;padding:14px 18px;margin-top:16px;font-size:14px;color:var(--ink-700);line-height:1.5;">${esc(play.footer)}</div>` : "";
+
+  const related = (play.related || []).map((id) => {
+    const rp = D.plays.find((p) => p.id === id);
+    return rp ? `<span data-go="#/plays/${esc(id)}" style="font-size:13px;font-family:var(--font-head);font-weight:700;color:var(--fgl-green-deep);background:var(--fgl-green-soft);padding:6px 12px;border-radius:999px;cursor:pointer;">${esc(id)} · ${esc(rp.title)}</span>` : "";
+  }).join("");
+  const relatedBlock = related ? `
+    <div style="margin-top:20px;">
+      <span class="eyebrow">Related plays</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">${related}</div>
+    </div>` : "";
+
+  return `
+  <div style="flex:1;max-width:840px;width:100%;margin:0 auto;padding:28px 24px 56px;box-sizing:border-box;">
+    <div style="display:flex;gap:8px;font-size:13px;font-family:var(--font-head);font-weight:700;color:var(--fgl-green);margin-bottom:18px;">
+      <span data-go="#/plays" style="cursor:pointer;">← All plays</span>
+      <span style="color:var(--ink-300);">/</span>
+      <span data-go="#/plays/${esc(play.section)}" style="cursor:pointer;">Section ${esc(play.section)} — ${esc(sec.name)}</span>
+    </div>
+    <div class="eyebrow">Play ${esc(play.id)} · ${esc(sec.name)}</div>
+    <h1 style="font-size:28px;margin:6px 0 18px;">${esc(play.title)}</h1>
+    ${warn}
+    <div style="display:flex;flex-direction:column;gap:16px;">${blocks}</div>
+    ${footer}${relatedBlock}
+  </div>`;
+}
+
+function policiesHTML() {
+  const facts = D.quickFacts.map((f) => `
+    <div style="background:var(--ink-50);border-radius:10px;padding:12px 14px;text-align:center;">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:19px;color:var(--fgl-green-deep);">${esc(f.big)}</div>
+      <div style="font-size:12px;color:var(--ink-500);margin-top:2px;">${esc(f.label)}</div>
+    </div>`).join("");
+
+  const groups = D.policyGroups.map((g) => {
+    const note = g.note ? `<div style="padding:10px 16px;background:var(--fgl-orange-soft);font-size:13px;color:var(--ink-900);line-height:1.45;">${esc(g.note)}</div>` : "";
+    const rows = g.rows.map((r) => `
+      <div style="display:flex;gap:12px;padding:9px 16px;border-top:1px solid var(--ink-100);font-size:13.5px;align-items:flex-start;">
+        <span style="flex:1;"><span style="font-family:var(--font-head);font-weight:700;color:var(--ink-1000);">${esc(r.text)}</span>${r.sub ? `<span style="display:block;font-size:12.5px;color:var(--ink-500);margin-top:1px;">${esc(r.sub)}</span>` : ""}</span>
+        ${r.tag ? `<span style="font-family:var(--font-head);font-weight:700;font-size:12.5px;color:var(--fgl-green-deep);white-space:nowrap;margin-top:1px;">${esc(r.tag)}</span>` : ""}
+      </div>`).join("");
+    return `
+    <div style="break-inside:avoid;border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;margin-bottom:16px;background:#fff;">
+      <div style="padding:11px 16px;background:var(--ink-50);border-bottom:1px solid var(--ink-200);font-family:var(--font-head);font-weight:700;font-size:14px;color:var(--ink-1000);">${esc(g.title)}</div>
+      ${note}${rows}
+    </div>`;
+  }).join("");
+
+  return `
+  <div style="flex:1;max-width:1180px;width:100%;margin:0 auto;padding:32px 24px 56px;box-sizing:border-box;">
+    <div class="eyebrow">Key policies</div>
+    <h1 style="font-size:30px;margin-top:4px;">Know these cold</h1>
+    <div class="facts4" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:10px;margin:20px 0 26px;">${facts}</div>
+    <div class="cols2" style="column-count:2;column-gap:16px;">${groups}</div>
+  </div>`;
+}
+
+function pricingHTML() {
+  const rows = D.pricing.map((pr) => `
+    <div style="display:flex;gap:14px;padding:12px 18px;border-bottom:1px solid var(--ink-100);align-items:flex-start;">
+      <span style="flex:1;"><span style="font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--ink-1000);">${esc(pr.name)}</span><span style="display:block;font-size:13px;color:var(--ink-500);margin-top:1px;">${esc(pr.sub)}</span></span>
+      <span style="font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--fgl-green-deep);white-space:nowrap;">${esc(pr.price)}</span>
+    </div>`).join("");
+  return `
+  <div style="flex:1;max-width:900px;width:100%;margin:0 auto;padding:32px 24px 56px;box-sizing:border-box;">
+    <div class="eyebrow">Pricing</div>
+    <h1 style="font-size:30px;margin-top:4px;">Every product, every price</h1>
+    <div style="border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;margin:20px 0 16px;background:#fff;">${rows}</div>
+    <div style="background:var(--ink-50);border-radius:12px;padding:14px 18px;font-size:14px;color:var(--ink-700);line-height:1.5;">FGL does not have a formal discount program. If a parent asks: <strong style="font-family:var(--font-head);color:var(--ink-1000);">“We don't have a formal discount program.”</strong> Payment plans are available by request — approved by Anisia or Steve.</div>
+    <div class="href" data-go="#/plays/A8" style="border:1px solid var(--fgl-green-soft);background:var(--fgl-green-tint);border-radius:12px;padding:16px 18px;margin-top:16px;cursor:pointer;">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--ink-1000);">$999 vs $975 — the confirmed script →</div>
+      <div style="font-size:13.5px;color:var(--ink-700);margin-top:3px;">The most common pricing question. Play A8 has the full word-for-word answer.</div>
+    </div>
+  </div>`;
+}
+
+function accordionItemHTML(it, key, isOpen, noteBg) {
+  const note = isOpen && it.note ? `<div style="padding:10px 16px 10px 40px;background:${noteBg};font-size:13px;color:var(--ink-900);">${esc(it.note)}</div>` : "";
+  const rows = isOpen ? it.rows.map((r) => `
+    <div style="display:flex;gap:12px;padding:9px 16px 9px 40px;border-top:1px solid var(--ink-100);font-size:14px;align-items:flex-start;">
+      <span style="width:22px;height:22px;border-radius:7px;background:var(--fgl-green-soft);color:var(--fgl-green-deep);font-family:var(--font-head);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">${esc(r.n)}</span>
+      <span style="flex:1;"><span style="color:var(--ink-900);">${esc(r.text)}</span>${r.sub ? `<span style="display:block;font-size:12.5px;color:var(--ink-500);margin-top:1px;">${esc(r.sub)}</span>` : ""}</span>
+      ${r.tag ? `<span style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--ink-500);white-space:nowrap;margin-top:3px;">${esc(r.tag)}</span>` : ""}
+    </div>`).join("") : "";
+  const footer = isOpen && it.footer ? `<div style="padding:10px 16px 12px 40px;background:var(--ink-50);font-size:13px;color:var(--ink-700);">${esc(it.footer)}</div>` : "";
+  return `
+    <div style="border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;background:#fff;">
+      <div class="acc-head" data-toggle="${esc(key)}" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;">
+        <span style="color:var(--fgl-green);font-size:12px;width:12px;">${isOpen ? "▼" : "▶"}</span>
+        <span style="font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--ink-1000);flex:1;">${esc(it.title)}</span>
+        <span style="font-size:12.5px;color:var(--ink-500);font-family:var(--font-head);font-weight:700;">${esc(it.owner)}</span>
+      </div>
+      ${note}${rows}${footer}
+    </div>`;
+}
+
+function isItemOpen(key, id, param) {
+  return key in state.open ? state.open[key] : param === id;
+}
+
+function opsHTML(param) {
+  const groups = D.ops.map((g) => {
+    const items = g.items.map((it) => {
+      const key = "o:" + it.id;
+      return accordionItemHTML(it, key, isItemOpen(key, it.id, param), "var(--fgl-orange-soft)");
+    }).join("");
+    return `
+    <div style="margin-top:26px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="font-family:var(--font-head);font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:var(--fgl-green);padding:4px 12px;border-radius:999px;">${esc(g.freq)}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">${items}</div>
+    </div>`;
+  }).join("");
+  return `
+  <div style="flex:1;max-width:900px;width:100%;margin:0 auto;padding:32px 24px 56px;box-sizing:border-box;">
+    <div class="eyebrow">Operations calendar</div>
+    <h1 style="font-size:30px;margin-top:4px;">What to do, and when</h1>
+    <p style="font-size:14.5px;color:var(--ink-500);margin-top:8px;">Every task is a checklist. Click one to expand it. Step-by-step DSS procedures live in <span data-go="#/guides" style="color:var(--fgl-green);font-family:var(--font-head);font-weight:700;cursor:pointer;">System Guides</span>.</p>
+    ${groups}
+  </div>`;
+}
+
+function guidesHTML(param) {
+  const systems = D.systems.map((s) => `
+    <div style="display:flex;gap:14px;padding:10px 18px;border-bottom:1px solid var(--ink-100);font-size:13.5px;align-items:flex-start;">
+      <span style="flex:1;"><span style="font-family:var(--font-head);font-weight:700;color:var(--ink-1000);">${esc(s.name)}</span><span style="display:block;font-size:12.5px;color:var(--ink-500);margin-top:1px;">${esc(s.sub)}</span></span>
+      <span style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--fgl-green-deep);white-space:nowrap;margin-top:1px;">${esc(s.tag)}</span>
+    </div>`).join("");
+  const items = D.guides.map((it) => {
+    const key = "g:" + it.id;
+    return accordionItemHTML(it, key, isItemOpen(key, it.id, param), "var(--fgl-green-tint)");
+  }).join("");
+  return `
+  <div style="flex:1;max-width:900px;width:100%;margin:0 auto;padding:32px 24px 56px;box-sizing:border-box;">
+    <div class="eyebrow">System guides</div>
+    <h1 style="font-size:30px;margin-top:4px;">Step-by-step procedures</h1>
+    <p style="font-size:14.5px;color:var(--ink-500);margin-top:8px;">DSS, Zoom, the DMV portal, Google Drive. Use these for an unfamiliar task or when training someone new.</p>
+    <div style="border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;margin:20px 0 26px;background:#fff;">${systems}</div>
+    <div class="eyebrow" style="margin-bottom:10px;">Procedures</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">${items}</div>
+  </div>`;
+}
+
+function peopleHTML() {
+  const staff = D.people.map((p) => `
+    <div style="border:1px solid var(--ink-200);border-radius:12px;padding:14px 16px;background:#fff;">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--ink-1000);">${esc(p.name)}</div>
+      <div style="font-size:12px;font-family:var(--font-head);font-weight:700;color:var(--fgl-green-deep);margin:1px 0 5px;">${esc(p.role)}</div>
+      <div style="font-size:13px;color:var(--ink-500);line-height:1.4;">${esc(p.focus)}</div>
+    </div>`).join("");
+  const locs = D.locations.map((l) => `
+    <div style="border:1px solid var(--ink-200);border-radius:12px;padding:14px 16px;background:#fff;">
+      <div style="display:flex;justify-content:space-between;gap:10px;">
+        <span style="font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--ink-1000);">${esc(l.name)}</span>
+        <span style="font-size:12.5px;font-family:var(--font-head);font-weight:700;color:var(--fgl-green-deep);text-align:right;">LTL: ${esc(l.ltl)}</span>
+      </div>
+      <div style="font-size:13px;color:var(--ink-500);margin-top:4px;line-height:1.4;">${esc(l.sub)}</div>
+    </div>`).join("");
+  const esc_rows = D.escalation.map((e) => `
+    <div style="display:flex;gap:12px;padding:9px 16px;border-bottom:1px solid var(--ink-100);font-size:13.5px;align-items:baseline;">
+      <span style="flex:1;color:var(--ink-900);">${esc(e.sit)}</span>
+      <span style="font-family:var(--font-head);font-weight:700;color:var(--ink-1000);white-space:nowrap;">${esc(e.who)}</span>
+      <span style="font-size:12px;color:var(--fgl-green-deep);font-family:var(--font-head);font-weight:700;white-space:nowrap;width:74px;text-align:right;">${esc(e.how)}</span>
+    </div>`).join("");
+  const contactRows = D.contacts.map((c) => `
+    <div style="display:flex;gap:12px;padding:9px 16px;border-bottom:1px solid var(--ink-100);font-size:13.5px;align-items:baseline;">
+      <span style="font-family:var(--font-head);font-weight:700;color:var(--ink-1000);white-space:nowrap;">${esc(c.name)}</span>
+      <span style="flex:1;text-align:right;color:var(--ink-700);font-size:13px;">${esc(c.detail)}</span>
+    </div>`).join("");
+  const backupRows = D.backup.map((b) => `
+    <div style="display:flex;gap:12px;padding:8px 16px;border-bottom:1px solid var(--ink-100);font-size:13.5px;">
+      <span style="flex:1.6;color:var(--ink-900);">${esc(b.task)}</span>
+      <span style="flex:1;font-family:var(--font-head);font-weight:700;color:var(--ink-1000);">${esc(b.owner)}</span>
+      <span style="flex:1;color:var(--ink-700);">${esc(b.backup)}</span>
+    </div>`).join("");
+
+  return `
+  <div style="flex:1;max-width:1080px;width:100%;margin:0 auto;padding:32px 24px 56px;box-sizing:border-box;">
+    <div class="eyebrow">People &amp; locations</div>
+    <h1 style="font-size:30px;margin-top:4px;">Who does what, and where</h1>
+    <div class="eyebrow" style="margin:24px 0 10px;">Leadership &amp; office staff</div>
+    <div class="staff3" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;">${staff}</div>
+    <div class="eyebrow" style="margin:26px 0 10px;">Locations &amp; Local Team Leaders</div>
+    <div class="split2" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;">${locs}</div>
+    <div style="background:var(--ink-50);border-radius:10px;padding:10px 16px;margin-top:10px;font-size:13px;color:var(--ink-700);">No walk-in offices at any location. All scheduling through the Online Student Center or by phone at (203) 861-1188.</div>
+    <div class="split2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px;align-items:start;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:10px;">Escalation — who to reach, how</div>
+        <div style="border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;background:#fff;">${esc_rows}</div>
+        <div style="background:var(--fgl-orange-soft);border-radius:10px;padding:10px 16px;margin-top:10px;font-size:13px;color:var(--ink-900);">Email is preferred — it creates a record. Text for true emergencies; call if no response within 5 minutes. Steve is not on Zoom Chat.</div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:10px;">Contacts</div>
+        <div style="border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;background:#fff;">${contactRows}</div>
+      </div>
+    </div>
+    <div class="eyebrow" style="margin:26px 0 10px;">Cross-training &amp; backup matrix</div>
+    <div style="border:1px solid var(--ink-200);border-radius:12px;overflow:hidden;background:#fff;">
+      <div style="display:flex;gap:12px;padding:9px 16px;background:var(--ink-50);border-bottom:1px solid var(--ink-200);font-family:var(--font-head);font-weight:700;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-500);">
+        <span style="flex:1.6;">Critical task</span><span style="flex:1;">Primary owner</span><span style="flex:1;">Trained backup</span>
+      </div>
+      ${backupRows}
+    </div>
+  </div>`;
+}
+
+/* ---------------- master render ---------------- */
+function viewHTML() {
+  const { view, param } = currentView();
+  if (view === "home" || view === "") return homeHTML();
+  if (view === "plays") {
+    const detail = D.plays.find((p) => p.id === param);
+    if (detail) return playDetailHTML(detail);
+    const filter = param.length === 1 ? param : "";
+    return playsIndexHTML(filter);
+  }
+  if (view === "policies") return policiesHTML();
+  if (view === "pricing") return pricingHTML();
+  if (view === "ops") return opsHTML(param);
+  if (view === "guides") return guidesHTML(param);
+  if (view === "people") return peopleHTML();
+  return homeHTML();
+}
+
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = headerHTML() + viewHTML() + footerHTML();
+  renderOverlay();
+}
+
+/* ---------------- interactions ---------------- */
+function clearQ() {
+  state.q = "";
+  ["hero-search", "hdr-search"].forEach((id) => { const el = document.getElementById(id); if (el) el.value = ""; });
+  renderOverlay();
+}
+function syncSearch() {
+  const active = document.activeElement;
+  ["hero-search", "hdr-search"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el && el !== active) el.value = state.q;
+  });
+  renderOverlay();
+}
+function focusSearch() {
+  const el = document.getElementById("hero-search") || document.getElementById("hdr-search");
+  if (el) el.focus();
+}
+function toggle(key) {
+  const { param } = currentView();
+  const id = key.split(":")[1];
+  const cur = key in state.open ? state.open[key] : param === id;
+  state.open[key] = !cur;
+  render();
+}
+
+document.addEventListener("click", (e) => {
+  const goEl = e.target.closest("[data-go]");
+  if (goEl) { go(goEl.getAttribute("data-go")); return; }
+  const chipEl = e.target.closest("[data-chip]");
+  if (chipEl) { state.q = chipEl.getAttribute("data-chip"); syncSearch(); focusSearch(); return; }
+  const togEl = e.target.closest("[data-toggle]");
+  if (togEl) { toggle(togEl.getAttribute("data-toggle")); return; }
+  const clearEl = e.target.closest("[data-clearq]");
+  if (clearEl) { clearQ(); return; }
+});
+
+document.addEventListener("input", (e) => {
+  if (e.target.id === "hero-search" || e.target.id === "hdr-search") {
+    state.q = e.target.value;
+    syncSearch();
+  }
+});
+
+document.addEventListener("change", (e) => {
+  if (e.target.matches('input[type="date"]')) {
+    state.permitDate = e.target.value;
+    render();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if ((e.target.id === "hero-search" || e.target.id === "hdr-search") && e.key === "Enter") {
+    const r = search(state.q);
+    if (r.length) go(r[0].hash);
+  }
+});
+
+window.addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    focusSearch();
+  }
+  if (e.key === "Escape") clearQ();
+});
+
+window.addEventListener("hashchange", onHash);
+
+/* ---------------- boot ---------------- */
+buildIndex();
+render();
+</script>
+</body>
+</html>
