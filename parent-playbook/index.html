@@ -548,6 +548,75 @@ a { color: inherit; text-decoration: none; }
   color: var(--fgl-green-deep);
 }
 
+.resource {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 22px 0;
+  padding: 14px 16px;
+  background: var(--fgl-green-tint);
+  border: 1px solid var(--fgl-green-soft);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--ink-1000);
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s, transform .12s ease;
+}
+.resource:hover {
+  border-color: var(--fgl-green);
+  box-shadow: 0 4px 14px rgba(45,155,20,.12);
+  transform: translateY(-1px);
+}
+.resource:active { transform: translateY(0); }
+.resource__icon {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--fgl-green);
+  position: relative;
+}
+.resource__icon::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 8px;
+  transform: translateX(-50%);
+  width: 2px; height: 12px;
+  background: #fff;
+  border-radius: 1px;
+}
+.resource__icon::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 15px;
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px; height: 8px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+.resource__body {
+  flex: 1;
+  display: flex; flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.resource__label {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fgl-green-deep);
+}
+.resource__title {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 14px; line-height: 1.25;
+  color: var(--ink-1000);
+  letter-spacing: -0.005em;
+}
+.resource__arrow {
+  flex-shrink: 0;
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 22px; line-height: 1;
+  color: var(--fgl-green);
+}
+
 .fend {
   padding: 28px 22px 36px;
   text-align: center;
@@ -928,7 +997,7 @@ a { color: inherit; text-decoration: none; }
           ]
         },
         {
-          n: "04", title: "Parallel parking", critical: true, sketch: "Parallel", vimeoId: "203007025",
+          n: "04", title: "Parallel parking", critical: true, sketch: "Parallel", vimeoId: "1201514358",
           intro: "The maneuver most students worry about most. The key reference is the 45° angle — that's where you straighten the wheel. Practice on a quiet residential street with light traffic.",
           procLabel: "The procedure — entering the space",
           procedure: [
@@ -1189,6 +1258,7 @@ a { color: inherit; text-decoration: none; }
         {
           n: "02", title: "Mock road tests", sketch: "Pass",
           intro: "Run three to four full mock tests in the two weeks before the road test, on FGL Practice Routes. Score against the FGL scoring sheet — same skills the DMV examiner evaluates.",
+          resource: { href: "assets/practice-road-test-routes.pdf", label: "FGL Practice Road Test Routes (PDF)" },
           procLabel: "Running a mock test",
           procedure: [
             "Pick an FGL Practice Route — link in the back of the Playbook.",
@@ -1561,6 +1631,14 @@ a { color: inherit; text-decoration: none; }
           <p style=${{ fontSize: "14px", lineHeight: 1.5 }}>${m.intro}</p>
         </div>
         ${m.vimeoId && html`<${VideoSlot} vimeoId=${m.vimeoId} label=${m.title + " · tutorial"} />`}
+        ${m.resource && html`<a class="resource" href=${m.resource.href} target="_blank" rel="noopener">
+          <span class="resource__icon" aria-hidden="true"></span>
+          <span class="resource__body">
+            <span class="resource__label">Download</span>
+            <span class="resource__title">${m.resource.label}</span>
+          </span>
+          <span class="resource__arrow" aria-hidden="true">›</span>
+        </a>`}
         <div class="proc-title">${m.procLabel} · tap to check off</div>
         <div class="body-pad">
           ${m.procedure.map(function (s, i) { return html`<${StepRow} key=${i} step=${s} idx=${i} />`; })}
