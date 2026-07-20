@@ -554,8 +554,8 @@ a { color: inherit; text-decoration: none; }
   gap: 14px;
   margin: 18px 22px 0;
   padding: 14px 16px;
-  background: var(--fgl-green-tint);
-  border: 1px solid var(--fgl-green-soft);
+  background: var(--fgl-orange-soft);
+  border: 1px solid rgba(255,128,0,.35);
   border-radius: 12px;
   text-decoration: none;
   color: var(--ink-1000);
@@ -563,8 +563,8 @@ a { color: inherit; text-decoration: none; }
   transition: border-color .15s, box-shadow .15s, transform .12s ease;
 }
 .resource:hover {
-  border-color: var(--fgl-green);
-  box-shadow: 0 4px 14px rgba(45,155,20,.12);
+  border-color: var(--fgl-orange);
+  box-shadow: 0 4px 16px rgba(255,128,0,.22);
   transform: translateY(-1px);
 }
 .resource:active { transform: translateY(0); }
@@ -572,7 +572,7 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
   width: 32px; height: 32px;
   border-radius: 8px;
-  background: var(--fgl-green);
+  background: var(--fgl-orange);
   position: relative;
 }
 .resource__icon::before {
@@ -602,7 +602,7 @@ a { color: inherit; text-decoration: none; }
 .resource__label {
   font-family: var(--font-head); font-weight: 700;
   font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--fgl-green-deep);
+  color: var(--fgl-orange-deep);
 }
 .resource__title {
   font-family: var(--font-head); font-weight: 700;
@@ -614,7 +614,7 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
   font-family: var(--font-head); font-weight: 700;
   font-size: 22px; line-height: 1;
-  color: var(--fgl-green);
+  color: var(--fgl-orange);
 }
 
 .fend {
